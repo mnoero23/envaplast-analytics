@@ -1,0 +1,8 @@
+# Dependencias de producción detectadas por Streamlit Community Cloud.
+streamlit>=1.42,<2
+sqlalchemy>=2.0,<3
+pandas>=2.2,<3
+plotly>=5.24,<7
+python-dotenv>=1.0,<2
+psycopg[binary]>=3.2,<4
+

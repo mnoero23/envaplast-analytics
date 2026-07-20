@@ -1,0 +1,40 @@
+name: Actualización diaria de datos sintéticos
+
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+    inputs:
+      business_date:
+        description: "Fecha opcional YYYY-MM-DD"
+        required: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      ENVAPLAST_SEED: ${{ secrets.ENVAPLAST_SEED }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Verificar secreto de base remota
+        run: test -n "$DATABASE_URL" || (echo "Falta DATABASE_URL en GitHub Secrets" && exit 1)
+      - name: Instalar
+        run: pip install -e ".[dev]"
+      - name: Crear o migrar esquema
+        run: python -c "from src.generator import create_schema; create_schema()"
+      - name: Generar fecha solicitada
+        if: ${{ github.event.inputs.business_date != '' }}
+        run: python scripts/generate_daily.py --date "${{ github.event.inputs.business_date }}"
+      - name: Completar días faltantes
+        if: ${{ github.event.inputs.business_date == '' }}
+        run: python scripts/generate_daily.py --fill-missing
+      - name: Calidad de datos
+        run: python scripts/validate_data.py
+      - name: Tests
+        run: pytest
+

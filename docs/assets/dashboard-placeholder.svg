@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="540" viewBox="0 0 1200 540">
+  <rect width="1200" height="540" fill="#f6f8fa"/>
+  <rect x="40" y="40" width="1120" height="460" rx="16" fill="white" stroke="#d9e2ec"/>
+  <text x="600" y="250" text-anchor="middle" font-family="Arial" font-size="34" fill="#1b4965">Envaplast Analytics</text>
+  <text x="600" y="300" text-anchor="middle" font-family="Arial" font-size="20" fill="#64748b">Espacio preparado para una captura profesional del dashboard</text>
+</svg>
+
