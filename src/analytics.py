@@ -77,6 +77,13 @@ def receivables(target_engine: Engine = default_engine, as_of: date | None = Non
         target_engine,
     )
     if frame.empty:
+        for column in [
+            "balance",
+            "days_past_due",
+            "aging_bucket",
+            "derived_status",
+        ]:
+            frame[column] = pd.Series(dtype="object")
         return frame
     frame["invoice_date"] = pd.to_datetime(frame["invoice_date"])
     frame["due_date"] = pd.to_datetime(frame["due_date"])

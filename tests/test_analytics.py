@@ -15,3 +15,8 @@ def test_analytics_frames_are_render_ready(test_engine):
     assert "balance" in receivables(test_engine, date(2026, 7, 1))
     abc = customer_abc(test_engine, date(2026, 7, 1))
     assert set(abc.abc).issubset({"A", "B", "C"})
+
+
+def test_empty_receivables_preserves_dashboard_schema(test_engine):
+    frame = receivables(test_engine, date(2026, 7, 1))
+    assert {"balance", "days_past_due", "aging_bucket", "derived_status"}.issubset(frame.columns)

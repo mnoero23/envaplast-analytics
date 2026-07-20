@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from sqlalchemy import func, select
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_DIR = Path(__file__).resolve().parent
@@ -27,13 +28,15 @@ from src.analytics import (
 from src.database import engine
 from src.generator import create_schema, initialize_history
 from src.metrics import comparable_previous_period
+from src.models import Order
 
 
 @st.cache_resource
 def bootstrap() -> bool:
     create_schema(engine)
-    minimum, maximum = available_date_range(engine)
-    if minimum == maximum and minimum == date.today():
+    with engine.connect() as connection:
+        order_count = connection.scalar(select(func.count()).select_from(Order)) or 0
+    if order_count == 0:
         initialize_history(engine)
     return True
 
