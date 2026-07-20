@@ -26,6 +26,7 @@ from ui import (
     money,
     number,
     setup_page,
+    style_figure,
     translate_columns,
 )
 
@@ -261,6 +262,7 @@ def abc_page(abc: pd.DataFrame, sales: pd.DataFrame, start: date, end: date) -> 
         color_discrete_map={"A": COLORS[0], "B": COLORS[1], "C": COLORS[2]},
         title="Facturación y categoría por cliente",
     )
+    style_figure(fig, "bar")
     st.plotly_chart(fig, width="stretch")
     customers = sorted(abc.customer_name.dropna().unique().tolist(), key=str.casefold)
     selected = st.selectbox("Explorar cliente", customers)

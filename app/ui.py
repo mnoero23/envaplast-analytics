@@ -63,8 +63,8 @@ def setup_page() -> None:
     <style>
     .block-container {padding-top: 1.6rem; max-width: 1500px;}
     [data-testid="stMetric"] {
-        background:#f6f8fa;
-        border:1px solid #e2e8f0;
+        background:linear-gradient(145deg, #ffffff 0%, #f7fafc 100%);
+        border:1px solid #dbe4ec;
         padding:14px;
         border-radius:12px;
         height:118px;
@@ -72,8 +72,22 @@ def setup_page() -> None:
         display:flex;
         flex-direction:column;
         justify-content:center;
+        box-shadow:0 4px 14px rgba(27, 73, 101, 0.10);
+        transition:box-shadow .18s ease, transform .18s ease;
+    }
+    [data-testid="stMetric"]:hover {
+        box-shadow:0 7px 20px rgba(27, 73, 101, 0.15);
+        transform:translateY(-1px);
     }
     [data-testid="stMetricLabel"] {min-height:28px; align-items:flex-start;}
+    div[data-testid="stPlotlyChart"] {
+        background:#ffffff;
+        border:1px solid #dbe4ec;
+        border-radius:14px;
+        padding:.45rem .55rem .25rem;
+        box-shadow:0 5px 18px rgba(27, 73, 101, 0.09);
+        overflow:hidden;
+    }
     [data-testid="stSidebar"] {border-right:1px solid #e5e7eb;}
     .synthetic {padding:.65rem .8rem;border-left:4px solid #2A9D8F;background:#edf7f5;border-radius:6px;}
     </style>
@@ -106,13 +120,33 @@ def chart(frame: pd.DataFrame, kind: str, x: str, y: str, title: str, color: str
         labels=SPANISH_LABELS,
         color_discrete_sequence=COLORS,
     )
+    style_figure(fig, kind)
+    return fig
+
+
+def style_figure(fig, kind: str = "bar"):
     fig.update_layout(
         margin=dict(l=10, r=10, t=55, b=10),
         legend_title_text="",
         hovermode="x unified" if kind == "line" else "closest",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="#FFFFFF",
+        font=dict(color="#334155", size=13),
+        title=dict(font=dict(color="#1B4965", size=18), x=0.02, xanchor="left"),
+        hoverlabel=dict(bgcolor="#FFFFFF", font_color="#1F2937", bordercolor="#CBD5E1"),
+    )
+    fig.update_xaxes(showgrid=False, linecolor="#DCE5EC", tickfont=dict(color="#64748B"))
+    fig.update_yaxes(
+        showgrid=True,
+        gridcolor="#E8EEF3",
+        gridwidth=1,
+        zeroline=False,
+        tickfont=dict(color="#64748B"),
     )
     if kind == "line":
-        fig.update_traces(line_width=3)
+        fig.update_traces(line_width=3, marker=dict(size=6), mode="lines+markers")
+    else:
+        fig.update_traces(marker_line_width=0, opacity=0.92)
     return fig
 
 

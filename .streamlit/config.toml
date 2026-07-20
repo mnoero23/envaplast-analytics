@@ -4,7 +4,12 @@ backgroundColor = "#FFFFFF"
 secondaryBackgroundColor = "#F6F8FA"
 textColor = "#1F2937"
 font = "sans serif"
+borderColor = "#D8E2EA"
+dataframeBorderColor = "#D8E2EA"
+dataframeHeaderBackgroundColor = "#F2F6F9"
+chartCategoricalColors = ["#1B4965", "#2A9D8F", "#E9C46A", "#E76F51", "#6C757D"]
+baseRadius = "12px"
+showWidgetBorder = true
 
 [server]
 headless = true
-
