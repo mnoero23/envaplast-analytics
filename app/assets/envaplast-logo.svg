@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" role="img" aria-labelledby="title desc">
+  <title id="title">Envaplast Analytics</title>
+  <desc id="desc">Isotipo de envase y gráfico ascendente</desc>
+  <rect width="320" height="96" rx="18" fill="#F6F8FA"/>
+  <g transform="translate(18 10)">
+    <path d="M25 6h28v10l8 9v38c0 8-6 13-14 13H31c-8 0-14-5-14-13V25l8-9V6z" fill="#1B4965"/>
+    <path d="M29 0h20v11H29z" rx="3" fill="#2A9D8F"/>
+    <path d="M26 57l10-11 8 7 12-17" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="56" cy="36" r="3" fill="#FFFFFF"/>
+  </g>
+  <text x="92" y="43" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#1B4965">Envaplast</text>
+  <text x="93" y="66" font-family="Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="2.8" fill="#2A9D8F">ANALYTICS</text>
+</svg>

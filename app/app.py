@@ -16,7 +16,18 @@ if str(APP_DIR) not in sys.path:
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from ui import COLORS, chart, csv_download, date_filter, header, money, number, setup_page
+from ui import (
+    COLORS,
+    SPANISH_LABELS,
+    chart,
+    csv_download,
+    date_filter,
+    header,
+    money,
+    number,
+    setup_page,
+    translate_columns,
+)
 
 from src.analytics import (
     available_date_range,
@@ -56,6 +67,12 @@ def summary(
     sales: pd.DataFrame, orders: pd.DataFrame, ar: pd.DataFrame, start: date, end: date
 ) -> None:
     header("Resumen ejecutivo", f"Tablero gerencial al {end:%d/%m/%Y}")
+    st.info(
+        "**Envaplast S.A.** es una pyme industrial ficticia radicada en Argentina que "
+        "fabrica botellas, frascos, bidones, baldes y sistemas de cierre plásticos. "
+        "Abastece a distribuidores, comercios e industrias de distintas provincias mediante "
+        "venta mayorista y condiciones de crédito adaptadas a cada segmento."
+    )
     current = sales[sales.invoice_date.dt.date.between(start, end)]
     p_start, p_end = comparable_previous_period(start.replace(day=1), end)
     previous = sales[sales.invoice_date.dt.date.between(p_start, p_end)]
@@ -151,7 +168,7 @@ def sales_page(sales: pd.DataFrame, start: date, end: date) -> None:
         chart(customer, "bar", "allocated_total", "customer_name", "Principales clientes"),
         width="stretch",
     )
-    st.dataframe(frame, width="stretch", hide_index=True)
+    st.dataframe(translate_columns(frame), width="stretch", hide_index=True)
     csv_download(frame, "ventas_envaplast.csv")
 
 
@@ -185,7 +202,7 @@ def orders_page(orders: pd.DataFrame, start: date, end: date) -> None:
         (frame.promised_date.dt.date < end) & ~frame.status.isin(["entregado", "cancelado"])
     ]
     st.subheader(f"Pedidos demorados ({len(delayed)})")
-    st.dataframe(delayed, width="stretch", hide_index=True)
+    st.dataframe(translate_columns(delayed), width="stretch", hide_index=True)
     csv_download(frame, "pedidos_envaplast.csv")
 
 
@@ -222,7 +239,7 @@ def ar_page(ar: pd.DataFrame, start: date, end: date) -> None:
         chart(concentration, "bar", "balance", "customer_name", "Concentración por cliente"),
         width="stretch",
     )
-    st.dataframe(frame, width="stretch", hide_index=True)
+    st.dataframe(translate_columns(frame), width="stretch", hide_index=True)
     csv_download(frame, "cuentas_corrientes_envaplast.csv")
 
 
@@ -240,11 +257,13 @@ def abc_page(abc: pd.DataFrame, sales: pd.DataFrame, start: date, end: date) -> 
         x="customer_name",
         y="revenue",
         color="abc",
+        labels=SPANISH_LABELS,
         color_discrete_map={"A": COLORS[0], "B": COLORS[1], "C": COLORS[2]},
         title="Facturación y categoría por cliente",
     )
     st.plotly_chart(fig, width="stretch")
-    selected = st.selectbox("Explorar cliente", abc.customer_name.tolist())
+    customers = sorted(abc.customer_name.dropna().unique().tolist(), key=str.casefold)
+    selected = st.selectbox("Explorar cliente", customers)
     history = (
         sales[sales.customer_name == selected]
         .groupby(sales.invoice_date.dt.to_period("M"))
@@ -256,16 +275,21 @@ def abc_page(abc: pd.DataFrame, sales: pd.DataFrame, start: date, end: date) -> 
         chart(history, "line", "invoice_date", "net_amount", f"Evolución de {selected}"),
         width="stretch",
     )
-    st.dataframe(frame, width="stretch", hide_index=True)
+    st.dataframe(translate_columns(frame), width="stretch", hide_index=True)
     csv_download(frame, "clientes_abc_envaplast.csv")
 
 
 def main() -> None:
     setup_page()
     bootstrap()
+    st.sidebar.image(str(APP_DIR / "assets" / "envaplast-logo.svg"), width="stretch")
     st.sidebar.title("Envaplast Analytics")
     st.sidebar.caption("Inteligencia comercial y financiera")
-    page = st.sidebar.radio(
+    st.sidebar.markdown(
+        "Pyme industrial argentina ficticia dedicada a fabricar y vender envases plásticos "
+        "para comercios, distribuidores e industrias."
+    )
+    page = st.sidebar.selectbox(
         "Navegación",
         [
             "Resumen ejecutivo",
