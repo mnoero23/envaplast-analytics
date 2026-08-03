@@ -38,6 +38,10 @@ Envaplast Analytics centraliza esa información y la transforma en una herramien
 4. **Cuentas corrientes:** saldos, aging, vencidos, concentración y límites.
 5. **Clientes y ABC:** participación móvil de 12 meses y evolución individual.
 
+## 🖥️ Vista del producto
+
+![Resumen ejecutivo de Envaplast Analytics](docs/assets/dashboard-overview.png)
+
 ## 💡 Mi enfoque
 
 Este proyecto no fue diseñado pensando únicamente en construir un dashboard.
