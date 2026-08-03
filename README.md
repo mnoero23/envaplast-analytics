@@ -50,8 +50,6 @@ El objetivo fue desarrollar un producto de datos que reprodujera un escenario re
 
 Mi forma de trabajar parte siempre de las preguntas del negocio antes que de las herramientas.
 
-![Espacio reservado para captura del dashboard](docs/assets/dashboard-placeholder.svg)
-
 ## Arquitectura
 
 ```text
