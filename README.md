@@ -1,10 +1,28 @@
-# Envaplast Analytics
+# 📊 Envaplast Analytics
 
-Aplicación de business intelligence para una fabricante argentina ficticia de envases plásticos. El proyecto reproduce un circuito comercial completo —pedido, entrega, factura y cobranza— y lo transforma en información gerencial accionable.
+> **Transformando datos comerciales en decisiones de negocio.**
+
+Envaplast Analytics es un producto de datos desarrollado para demostrar cómo una PyME puede transformar información dispersa en una herramienta de gestión moderna.
+
+El proyecto reproduce el circuito comercial completo —desde el pedido hasta la cobranza— y lo convierte en una aplicación de Business Intelligence capaz de responder preguntas de negocio mediante indicadores claros, procesos automatizados y visualizaciones ejecutivas.
 
 > **Aviso:** Envaplast, sus clientes, CUIT, documentos y operaciones son totalmente sintéticos. No representan personas ni empresas reales.
 
-## Qué demuestra
+## 🎯 El problema
+
+En muchas pequeñas y medianas empresas la información comercial existe, pero se encuentra distribuida entre planillas, reportes y distintos sistemas.
+
+Responder preguntas simples suele requerir tiempo y trabajo manual:
+
+- ¿Cómo evolucionan las ventas?
+- ¿Qué clientes generan mayor facturación?
+- ¿Cuánto dinero está pendiente de cobro?
+- ¿Cómo evoluciona la cartera?
+- ¿Qué pedidos presentan demoras?
+
+Envaplast Analytics centraliza esa información y la transforma en una herramienta que permite responder esas preguntas en segundos.
+
+## 🚀 Capacidades del proyecto
 
 - Modelado relacional y SQL compatible con SQLite/PostgreSQL.
 - Generación reproducible de 18 meses de datos con estacionalidad y concentración comercial.
@@ -19,6 +37,14 @@ Aplicación de business intelligence para una fabricante argentina ficticia de e
 3. **Pedidos:** backlog, estados, demoras y cumplimiento prometido.
 4. **Cuentas corrientes:** saldos, aging, vencidos, concentración y límites.
 5. **Clientes y ABC:** participación móvil de 12 meses y evolución individual.
+
+## 💡 Mi enfoque
+
+Este proyecto no fue diseñado pensando únicamente en construir un dashboard.
+
+El objetivo fue desarrollar un producto de datos que reprodujera un escenario real de negocio, integrando generación de datos, modelado, automatización, validación y visualización.
+
+Mi forma de trabajar parte siempre de las preguntas del negocio antes que de las herramientas.
 
 ![Espacio reservado para captura del dashboard](docs/assets/dashboard-placeholder.svg)
 
@@ -109,3 +135,21 @@ El proyecto integra análisis de negocio, diseño de datos, SQL, Python, automat
 ## Roadmap
 
 Finanzas y proveedores, compras/producción/stock, costos e inflación, y activos de comunicación para portfolio están detallados en [docs/roadmap.md](docs/roadmap.md).
+
+## 👨‍💻 Sobre mí
+
+Soy Matías Noero.
+
+Me apasiona transformar información compleja en herramientas simples que ayuden a las personas a comprender mejor su negocio y tomar decisiones con mayor confianza.
+
+Actualmente desarrollo proyectos relacionados con:
+
+- Business Intelligence
+- Data Analytics
+- Automatización de procesos
+- Ciencia de Datos
+- Oil & Gas Analytics
+
+📫 LinkedIn
+
+📫 GitHub
