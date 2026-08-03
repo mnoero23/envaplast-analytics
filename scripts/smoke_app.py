@@ -16,7 +16,7 @@ PAGES = [
 app = AppTest.from_file(str(APP), default_timeout=120).run()
 results: dict[str, dict[str, int]] = {}
 for page in PAGES:
-    app.sidebar.selectbox[0].set_value(page).run()
+    app.sidebar.radio[0].set_value(page).run()
     if app.exception:
         messages = [exception.message for exception in app.exception]
         raise RuntimeError(f"Fallo al renderizar {page}: {messages}")
@@ -28,6 +28,8 @@ for page in PAGES:
 
 if not results["Resumen ejecutivo"]["metrics"]:
     raise RuntimeError("El resumen no renderizó tarjetas KPI")
+if len(app.sidebar.radio) != 1:
+    raise RuntimeError("La navegación lateral no renderizó el control esperado")
 if not any(value["dataframes"] for value in results.values()):
     raise RuntimeError("No se renderizó ninguna tabla de detalle")
 print(results)

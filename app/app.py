@@ -5,7 +5,6 @@ from datetime import date
 from pathlib import Path
 
 import pandas as pd
-import plotly.express as px
 import streamlit as st
 from sqlalchemy import func, select
 
@@ -18,16 +17,19 @@ if str(ROOT) not in sys.path:
 
 from ui import (
     COLORS,
-    SPANISH_LABELS,
+    ManagementAlert,
+    alerts_panel,
     chart,
     csv_download,
+    dataframe,
     date_filter,
     header,
+    metric_row,
     money,
     number,
+    render_chart,
+    section_heading,
     setup_page,
-    style_figure,
-    translate_columns,
 )
 
 from src.analytics import (
@@ -41,6 +43,21 @@ from src.database import engine
 from src.generator import create_schema, initialize_history
 from src.metrics import comparable_previous_period
 from src.models import Order
+
+NAVIGATION_ICONS = {
+    "Resumen ejecutivo": "home",
+    "Facturación y ventas": "query_stats",
+    "Pedidos": "inventory_2",
+    "Cuentas corrientes": "account_balance_wallet",
+    "Clientes y ABC": "groups",
+}
+
+COMPANY_DESCRIPTION = (
+    "Envaplast S.A. es una pyme industrial ficticia radicada en Argentina que fabrica "
+    "botellas, frascos, bidones, baldes y sistemas de cierre plásticos. Abastece a "
+    "distribuidores, comercios e industrias de distintas provincias mediante venta "
+    "mayorista y condiciones de crédito adaptadas a cada segmento."
+)
 
 
 @st.cache_resource
@@ -67,12 +84,10 @@ def select_values(frame: pd.DataFrame, column: str, label: str) -> pd.DataFrame:
 def summary(
     sales: pd.DataFrame, orders: pd.DataFrame, ar: pd.DataFrame, start: date, end: date
 ) -> None:
-    header("Resumen ejecutivo", f"Tablero gerencial al {end:%d/%m/%Y}")
-    st.info(
-        "**Envaplast S.A.** es una pyme industrial ficticia radicada en Argentina que "
-        "fabrica botellas, frascos, bidones, baldes y sistemas de cierre plásticos. "
-        "Abastece a distribuidores, comercios e industrias de distintas provincias mediante "
-        "venta mayorista y condiciones de crédito adaptadas a cada segmento."
+    header(
+        "Resumen ejecutivo",
+        "Visión integral del desempeño comercial, operativo y financiero.",
+        f"{start:%d/%m/%Y} — {end:%d/%m/%Y}",
     )
     current = sales[sales.invoice_date.dt.date.between(start, end)]
     p_start, p_end = comparable_previous_period(start.replace(day=1), end)
@@ -84,27 +99,58 @@ def summary(
     open_orders = orders[~orders.status.isin(["entregado", "cancelado"])]
     open_ar = ar[ar.balance > 0.01]
     overdue = open_ar[open_ar.derived_status == "vencida"].balance.sum()
-    cards = st.columns(4)
-    cards[0].metric(
-        "Facturación", money(revenue), f"{delta:+.1f}% vs. {p_start:%d/%m}-{p_end:%d/%m}"
-    )
-    cards[1].metric("Unidades vendidas", number(current.billed_quantity.sum()))
-    cards[2].metric("Pedidos ingresados", number(current_orders.order_id.nunique()))
-    cards[3].metric("Pedidos pendientes", number(open_orders.order_id.nunique()))
-    cards = st.columns(4)
-    cards[0].metric("Cuentas por cobrar", money(open_ar.balance.sum()))
-    cards[1].metric("Deuda vencida", money(overdue))
-    cards[2].metric(
-        "Cartera vencida",
-        f"{overdue / open_ar.balance.sum() * 100:.1f}%" if open_ar.balance.sum() else "0,0%",
-    )
     paid = ar[(ar.derived_status == "pagada") & ar.last_collection_date.notna()].copy()
     paid["collection_days"] = (
         pd.to_datetime(paid.last_collection_date) - paid.invoice_date
     ).dt.days
-    cards[3].metric(
-        "Días promedio de cobro", f"{paid.collection_days.mean():.1f}" if not paid.empty else "—"
+
+    section_heading(
+        "Indicadores principales",
+        "Los valores con mayor impacto en la gestión del período.",
     )
+    metric_row(
+        [
+            (
+                "Facturación",
+                money(revenue),
+                f"{delta:+.1f}% vs. {p_start:%d/%m}-{p_end:%d/%m}",
+            ),
+            ("Cuentas por cobrar", money(open_ar.balance.sum()), None),
+            ("Deuda vencida", money(overdue), None),
+            ("Pedidos pendientes", number(open_orders.order_id.nunique()), None),
+        ],
+        key="kpi_primary",
+    )
+    section_heading(
+        "Indicadores operativos",
+        "Volumen, actividad comercial y eficiencia de cobranza.",
+    )
+    metric_row(
+        [
+            ("Unidades vendidas", number(current.billed_quantity.sum()), None),
+            ("Pedidos ingresados", number(current_orders.order_id.nunique()), None),
+            (
+                "Cartera vencida",
+                f"{overdue / open_ar.balance.sum() * 100:.1f}%"
+                if open_ar.balance.sum()
+                else "0,0%",
+                None,
+            ),
+            (
+                "Días promedio de cobro",
+                f"{paid.collection_days.mean():.1f}" if not paid.empty else "—",
+                None,
+            ),
+        ],
+        key="kpi_operational",
+    )
+    st.caption(
+        "Envaplast es una empresa industrial argentina ficticia dedicada a soluciones "
+        "de envases plásticos para clientes mayoristas."
+    )
+    with st.expander("Sobre Envaplast", icon=":material/factory:"):
+        st.write(COMPANY_DESCRIPTION)
+
     monthly = (
         sales.groupby(sales.invoice_date.dt.to_period("M"))
         .agg(
@@ -116,26 +162,39 @@ def summary(
         .reset_index()
     )
     monthly["invoice_date"] = monthly.invoice_date.astype(str)
-    st.plotly_chart(
+    render_chart(
         chart(
-            monthly.tail(18), "line", "invoice_date", "revenue", "Evolución mensual de facturación"
-        ),
-        width="stretch",
+            monthly.tail(18),
+            "line",
+            "invoice_date",
+            "revenue",
+            "Evolución mensual de facturación",
+        )
     )
-    st.subheader("Alertas automáticas")
-    alerts = []
+
+    alerts: list[ManagementAlert] = []
     if delta < -10:
-        alerts.append(f"⚠️ La facturación comparable cae {abs(delta):.1f}%.")
+        alerts.append(
+            ManagementAlert("crítico", f"La facturación comparable cae {abs(delta):.1f}%.")
+        )
     if open_ar.balance.sum() and overdue / open_ar.balance.sum() > 0.25:
-        alerts.append("⚠️ Más del 25% de la cartera está vencida.")
+        alerts.append(ManagementAlert("crítico", "Más del 25% de la cartera está vencida."))
     if not open_orders.empty:
-        alerts.append(f"📦 Hay {open_orders.order_id.nunique()} pedidos pendientes de entrega.")
-    for alert in alerts or ["✅ No se detectaron desvíos relevantes con las reglas actuales."]:
-        st.info(alert)
+        alerts.append(
+            ManagementAlert(
+                "atención",
+                f"Hay {open_orders.order_id.nunique()} pedidos pendientes de entrega.",
+            )
+        )
+    alerts_panel(alerts)
 
 
 def sales_page(sales: pd.DataFrame, start: date, end: date) -> None:
-    header("Facturación y ventas", "Evolución, mix comercial y detalle descargable")
+    header(
+        "Facturación y ventas",
+        "Evolución, mix comercial y detalle descargable.",
+        f"{start:%d/%m/%Y} — {end:%d/%m/%Y}",
+    )
     frame = sales[sales.invoice_date.dt.date.between(start, end)]
     frame = select_values(frame, "customer_name", "Cliente")
     frame = select_values(frame, "product_family", "Familia de producto")
@@ -143,72 +202,97 @@ def sales_page(sales: pd.DataFrame, start: date, end: date) -> None:
     if frame.empty:
         st.warning("No hay ventas para los filtros seleccionados.")
         return
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Facturación", money(frame.allocated_total.sum()))
-    c2.metric("Unidades", number(frame.billed_quantity.sum()))
-    c3.metric("Precio promedio", money(frame.net_amount.sum() / frame.quantity.sum()))
+    metric_row(
+        [
+            ("Facturación", money(frame.allocated_total.sum()), None),
+            ("Unidades", number(frame.billed_quantity.sum()), None),
+            ("Precio promedio", money(frame.net_amount.sum() / frame.quantity.sum()), None),
+        ],
+        key="kpi_sales",
+    )
     daily = frame.groupby(frame.invoice_date.dt.date).allocated_total.sum().reset_index()
-    family = frame.groupby("product_family").allocated_total.sum().sort_values().reset_index()
-    customer = (
-        frame.groupby("customer_name")
-        .allocated_total.sum()
-        .nlargest(12)
-        .sort_values()
-        .reset_index()
-    )
+    family = frame.groupby("product_family").allocated_total.sum().reset_index()
+    customer = frame.groupby("customer_name").allocated_total.sum().nlargest(12).reset_index()
     left, right = st.columns(2)
-    left.plotly_chart(
-        chart(daily, "line", "invoice_date", "allocated_total", "Facturación diaria"),
-        width="stretch",
+    with left:
+        render_chart(chart(daily, "line", "invoice_date", "allocated_total", "Facturación diaria"))
+    with right:
+        render_chart(
+            chart(
+                family,
+                "bar",
+                "allocated_total",
+                "product_family",
+                "Ventas por familia",
+                orientation="h",
+                sort_values=True,
+            )
+        )
+    render_chart(
+        chart(
+            customer,
+            "bar",
+            "allocated_total",
+            "customer_name",
+            "Principales clientes",
+            orientation="h",
+            sort_values=True,
+        )
     )
-    right.plotly_chart(
-        chart(family, "bar", "allocated_total", "product_family", "Ventas por familia"),
-        width="stretch",
-    )
-    st.plotly_chart(
-        chart(customer, "bar", "allocated_total", "customer_name", "Principales clientes"),
-        width="stretch",
-    )
-    st.dataframe(translate_columns(frame), width="stretch", hide_index=True)
+    section_heading("Detalle de ventas", "Registros incluidos en los filtros seleccionados.")
+    dataframe(frame, key="sales_table")
     csv_download(frame, "ventas_envaplast.csv")
 
 
 def orders_page(orders: pd.DataFrame, start: date, end: date) -> None:
-    header("Pedidos", "Backlog, cumplimiento y desempeño de entregas")
+    header(
+        "Pedidos",
+        "Backlog, cumplimiento y desempeño de entregas.",
+        f"{start:%d/%m/%Y} — {end:%d/%m/%Y}",
+    )
     frame = orders[orders.order_date.dt.date.between(start, end)]
     frame = select_values(frame, "status", "Estado del pedido")
     open_frame = frame[~frame.status.isin(["entregado", "cancelado"])]
     delivered = frame[frame.delivery_date.notna()].copy()
     delivered["lead_days"] = (delivered.delivery_date - delivered.order_date).dt.days
     delivered["on_time"] = delivered.delivery_date <= delivered.promised_date
-    cols = st.columns(4)
-    cols[0].metric("Pedidos", number(frame.order_id.nunique()))
-    cols[1].metric("Importe ingresado", money(frame.order_amount.sum()))
-    cols[2].metric("Pendientes", number(open_frame.order_id.nunique()))
-    cols[3].metric(
-        "Cumplimiento prometido",
-        f"{delivered.on_time.mean() * 100:.1f}%" if not delivered.empty else "—",
+    metric_row(
+        [
+            ("Pedidos", number(frame.order_id.nunique()), None),
+            ("Importe ingresado", money(frame.order_amount.sum()), None),
+            ("Pendientes", number(open_frame.order_id.nunique()), None),
+            (
+                "Cumplimiento prometido",
+                f"{delivered.on_time.mean() * 100:.1f}%" if not delivered.empty else "—",
+                None,
+            ),
+        ],
+        key="kpi_orders",
     )
     left, right = st.columns(2)
     status = frame.groupby("status").order_id.nunique().reset_index()
-    left.plotly_chart(
-        chart(status, "bar", "status", "order_id", "Pedidos por estado"), width="stretch"
-    )
+    with left:
+        render_chart(chart(status, "bar", "status", "order_id", "Pedidos por estado"))
     trend = frame.groupby(frame.order_date.dt.date).order_id.nunique().reset_index()
-    right.plotly_chart(
-        chart(trend, "line", "order_date", "order_id", "Pedidos ingresados por día"),
-        width="stretch",
-    )
+    with right:
+        render_chart(chart(trend, "line", "order_date", "order_id", "Pedidos ingresados por día"))
     delayed = frame[
         (frame.promised_date.dt.date < end) & ~frame.status.isin(["entregado", "cancelado"])
     ]
-    st.subheader(f"Pedidos demorados ({len(delayed)})")
-    st.dataframe(translate_columns(delayed), width="stretch", hide_index=True)
+    section_heading(
+        f"Pedidos demorados ({len(delayed)})",
+        "Pedidos cuya fecha prometida ya transcurrió y todavía no fueron entregados.",
+    )
+    dataframe(delayed, key="orders_table")
     csv_download(frame, "pedidos_envaplast.csv")
 
 
 def ar_page(ar: pd.DataFrame, start: date, end: date) -> None:
-    header("Cuentas corrientes", "Saldos, mora y concentración de riesgo")
+    header(
+        "Cuentas corrientes",
+        "Saldos, mora y concentración de riesgo.",
+        f"{start:%d/%m/%Y} — {end:%d/%m/%Y}",
+    )
     frame = ar[(ar.invoice_date.dt.date <= end) & (ar.balance > 0.01)]
     frame = select_values(frame, "derived_status", "Estado de factura")
     frame = select_values(frame, "customer_name", "Cliente")
@@ -216,54 +300,83 @@ def ar_page(ar: pd.DataFrame, start: date, end: date) -> None:
     customer = frame.groupby(
         ["customer_id", "customer_name", "credit_limit"], as_index=False
     ).balance.sum()
-    cols = st.columns(4)
-    cols[0].metric("Saldo pendiente", money(frame.balance.sum()))
-    cols[1].metric("Saldo vencido", money(overdue.balance.sum()))
-    cols[2].metric(
-        "Mora promedio",
-        f"{overdue.days_past_due.mean():.1f} días" if not overdue.empty else "0 días",
+    metric_row(
+        [
+            ("Saldo pendiente", money(frame.balance.sum()), None),
+            ("Saldo vencido", money(overdue.balance.sum()), None),
+            (
+                "Mora promedio",
+                f"{overdue.days_past_due.mean():.1f} días" if not overdue.empty else "0 días",
+                None,
+            ),
+            ("Sobre límite", number((customer.balance > customer.credit_limit).sum()), None),
+        ],
+        key="kpi_receivables",
     )
-    cols[3].metric("Sobre límite", number((customer.balance > customer.credit_limit).sum()))
     aging = (
         frame.groupby("aging_bucket")
         .balance.sum()
-        .reindex(["No vencido", "1-30 días", "31-60 días", "61-90 días", ">90 días"], fill_value=0)
+        .reindex(
+            ["No vencido", "1-30 días", "31-60 días", "61-90 días", ">90 días"],
+            fill_value=0,
+        )
         .reset_index()
     )
-    concentration = customer.nlargest(12, "balance").sort_values("balance")
+    concentration = customer.nlargest(12, "balance")
     left, right = st.columns(2)
-    left.plotly_chart(
-        chart(aging, "bar", "aging_bucket", "balance", "Antigüedad de saldos"),
-        width="stretch",
-    )
-    right.plotly_chart(
-        chart(concentration, "bar", "balance", "customer_name", "Concentración por cliente"),
-        width="stretch",
-    )
-    st.dataframe(translate_columns(frame), width="stretch", hide_index=True)
+    with left:
+        render_chart(chart(aging, "bar", "aging_bucket", "balance", "Antigüedad de saldos"))
+    with right:
+        render_chart(
+            chart(
+                concentration,
+                "bar",
+                "balance",
+                "customer_name",
+                "Concentración por cliente",
+                orientation="h",
+                sort_values=True,
+            )
+        )
+    section_heading("Detalle de cuentas corrientes", "Composición de los saldos pendientes.")
+    dataframe(frame, key="receivables_table")
     csv_download(frame, "cuentas_corrientes_envaplast.csv")
 
 
 def abc_page(abc: pd.DataFrame, sales: pd.DataFrame, start: date, end: date) -> None:
-    header("Clientes y análisis ABC", "Concentración de facturación móvil de 12 meses")
+    header(
+        "Clientes y análisis ABC",
+        "Concentración de facturación móvil de 12 meses.",
+        f"{start:%d/%m/%Y} — {end:%d/%m/%Y}",
+    )
     category = st.sidebar.multiselect("Categoría ABC", ["A", "B", "C"])
     frame = abc[abc.abc.isin(category)] if category else abc
-    cols = st.columns(4)
-    for idx, cat in enumerate(["A", "B", "C"]):
-        cols[idx].metric(f"Clientes {cat}", number((abc.abc == cat).sum()))
-    cols[3].metric("Top 10 / ventas", f"{abc.head(10).share.sum() * 100:.1f}%")
-    plot = frame.head(30).copy()
-    fig = px.bar(
-        plot,
-        x="customer_name",
-        y="revenue",
-        color="abc",
-        labels=SPANISH_LABELS,
-        color_discrete_map={"A": COLORS[0], "B": COLORS[1], "C": COLORS[2]},
-        title="Facturación y categoría por cliente",
+    metric_row(
+        [
+            ("Clientes A", number((abc.abc == "A").sum()), None),
+            ("Clientes B", number((abc.abc == "B").sum()), None),
+            ("Clientes C", number((abc.abc == "C").sum()), None),
+            ("Top 10 / ventas", f"{abc.head(10).share.sum() * 100:.1f}%", None),
+        ],
+        key="kpi_abc",
     )
-    style_figure(fig, "bar")
-    st.plotly_chart(fig, width="stretch")
+    plot = frame.head(30).copy()
+    fig = chart(
+        plot,
+        "bar",
+        "revenue",
+        "customer_name",
+        "Facturación y categoría por cliente",
+        color="abc",
+        orientation="h",
+        sort_values=True,
+    )
+    for trace in fig.data:
+        trace.marker.color = {"A": COLORS[0], "B": COLORS[1], "C": COLORS[2]}.get(
+            trace.name,
+            COLORS[4],
+        )
+    render_chart(fig)
     customers = sorted(abc.customer_name.dropna().unique().tolist(), key=str.casefold)
     selected = st.selectbox("Explorar cliente", customers)
     history = (
@@ -273,40 +386,34 @@ def abc_page(abc: pd.DataFrame, sales: pd.DataFrame, start: date, end: date) -> 
         .reset_index()
     )
     history["invoice_date"] = history.invoice_date.astype(str)
-    st.plotly_chart(
-        chart(history, "line", "invoice_date", "net_amount", f"Evolución de {selected}"),
-        width="stretch",
-    )
-    st.dataframe(translate_columns(frame), width="stretch", hide_index=True)
+    render_chart(chart(history, "line", "invoice_date", "net_amount", f"Evolución de {selected}"))
+    section_heading("Cartera de clientes", "Clasificación y participación sobre ventas.")
+    dataframe(frame, key="abc_table")
     csv_download(frame, "clientes_abc_envaplast.csv")
 
 
 def main() -> None:
     setup_page()
     bootstrap()
-    st.sidebar.image(str(APP_DIR / "assets" / "envaplast-logo.svg"), width="stretch")
-    st.sidebar.title("Envaplast Analytics")
-    st.sidebar.caption("Inteligencia comercial y financiera")
-    st.sidebar.markdown(
-        "Pyme industrial argentina ficticia dedicada a fabricar y vender envases plásticos "
-        "para comercios, distribuidores e industrias."
-    )
-    page = st.sidebar.selectbox(
-        "Navegación",
-        [
-            "Resumen ejecutivo",
-            "Facturación y ventas",
-            "Pedidos",
-            "Cuentas corrientes",
-            "Clientes y ABC",
-        ],
-    )
+    with st.sidebar:
+        st.image(str(APP_DIR / "assets" / "envaplast-logo.svg"), width="stretch")
+        with st.container(key="sidebar_identity"):
+            st.subheader("Envaplast Analytics", anchor=False)
+            st.caption("Inteligencia comercial y financiera")
+        with st.expander("Sobre la empresa", icon=":material/factory:"):
+            st.write(COMPANY_DESCRIPTION)
+        page = st.radio(
+            "Navegación",
+            list(NAVIGATION_ICONS),
+            format_func=lambda option: f":material/{NAVIGATION_ICONS[option]}: {option}",
+            key="navigation",
+            width="stretch",
+        )
     minimum, maximum = available_date_range(engine)
     start, end = date_filter(minimum, maximum)
-    st.sidebar.markdown("---")
-    st.sidebar.info(
-        "Todos los datos son sintéticos y no representan empresas ni operaciones reales."
-    )
+    with st.sidebar:
+        st.badge("Datos sintéticos", icon=":material/database:", color="green")
+        st.caption("No representan empresas ni operaciones reales.")
     try:
         sales, orders, ar, abc = load_data()
         {

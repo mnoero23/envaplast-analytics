@@ -1,7 +1,8 @@
 [theme]
+base = "light"
 primaryColor = "#1B4965"
 backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#F6F8FA"
+secondaryBackgroundColor = "#F3F6F8"
 textColor = "#1F2937"
 font = "sans serif"
 borderColor = "#D8E2EA"
@@ -9,7 +10,26 @@ dataframeBorderColor = "#D8E2EA"
 dataframeHeaderBackgroundColor = "#F2F6F9"
 chartCategoricalColors = ["#1B4965", "#2A9D8F", "#E9C46A", "#E76F51", "#6C757D"]
 baseRadius = "12px"
+buttonRadius = "10px"
 showWidgetBorder = true
+showSidebarBorder = true
+baseFontSize = 15
+headingFontSizes = ["2.15rem", "1.55rem", "1.2rem", "1rem", "0.9rem", "0.8rem"]
+headingFontWeights = [600, 600, 600, 600, 600, 600]
+linkUnderline = false
+blueColor = "#1B4965"
+greenColor = "#2A9D8F"
+yellowColor = "#E9C46A"
+orangeColor = "#D97745"
+redColor = "#C94F3D"
+grayColor = "#6C757D"
+
+[theme.sidebar]
+backgroundColor = "#F4F7F9"
+secondaryBackgroundColor = "#EAF0F4"
+textColor = "#243746"
+primaryColor = "#1B4965"
+borderColor = "#D8E2EA"
 
 [server]
 headless = true
