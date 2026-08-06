@@ -2,6 +2,8 @@
 
 > **Transformando datos comerciales en decisiones de negocio.**
 
+**[🚀 Ver demo en vivo](https://envaplast-analytics.streamlit.app/)**
+
 Envaplast Analytics es un producto de datos desarrollado para demostrar cómo una PyME puede transformar información dispersa en una herramienta de gestión moderna.
 
 El proyecto reproduce el circuito comercial completo —desde el pedido hasta la cobranza— y lo convierte en una aplicación de Business Intelligence capaz de responder preguntas de negocio mediante indicadores claros, procesos automatizados y visualizaciones ejecutivas.
@@ -130,6 +132,8 @@ Nunca se deben versionar `.env`, `secrets.toml` ni credenciales. Para PostgreSQL
 ## Automatización y despliegue
 
 El workflow `.github/workflows/daily-data.yml` se ejecuta diariamente o manualmente, exige `DATABASE_URL`, completa fechas faltantes y detiene el proceso si falla calidad o tests. La guía para Supabase y Streamlit Community Cloud está en [docs/deployment.md](docs/deployment.md). No se crean recursos externos automáticamente.
+
+La demo pública está disponible en [envaplast-analytics.streamlit.app](https://envaplast-analytics.streamlit.app/).
 
 ### Publicación rápida del portfolio
 
