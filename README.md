@@ -8,6 +8,12 @@ El proyecto reproduce el circuito comercial completo —desde el pedido hasta la
 
 > **Aviso:** Envaplast, sus clientes, CUIT, documentos y operaciones son totalmente sintéticos. No representan personas ni empresas reales.
 
+## ¿Por qué construí este proyecto?
+
+Muchas PyMEs toman decisiones con información distribuida entre planillas, reportes y sistemas desconectados. Envaplast Analytics demuestra cómo transformar ese escenario en un producto de datos moderno: integrado, reproducible y orientado a responder preguntas concretas del negocio.
+
+Envaplast es una empresa ficticia, pero el problema de negocio que representa es real y frecuente en organizaciones que necesitan convertir datos dispersos en información confiable para decidir.
+
 ## 🎯 El problema
 
 En muchas pequeñas y medianas empresas la información comercial existe, pero se encuentra distribuida entre planillas, reportes y distintos sistemas.
@@ -49,6 +55,17 @@ Este proyecto no fue diseñado pensando únicamente en construir un dashboard.
 El objetivo fue desarrollar un producto de datos que reprodujera un escenario real de negocio, integrando generación de datos, modelado, automatización, validación y visualización.
 
 Mi forma de trabajar parte siempre de las preguntas del negocio antes que de las herramientas.
+
+## ¿Qué demuestra este proyecto?
+
+- Comprensión de problemas de negocio.
+- Modelado relacional y SQL.
+- Desarrollo de procesos ETL reproducibles.
+- Automatización e idempotencia.
+- Validación y calidad de datos.
+- Diseño de indicadores comerciales y financieros.
+- Desarrollo de dashboards ejecutivos.
+- Documentación técnica y comunicación de resultados.
 
 ## Arquitectura
 
@@ -130,10 +147,6 @@ La SQLite del modo demostración puede regenerarse después de una suspensión o
 
 Las definiciones formales están en [docs/kpi-definitions.md](docs/kpi-definitions.md). La comparación mensual usa el mismo número de días transcurridos; ABC usa facturación de los últimos 365 días con cortes acumulados 80/95%; cartera es factura menos cobranzas.
 
-## Competencias y aprendizajes
-
-El proyecto integra análisis de negocio, diseño de datos, SQL, Python, automatización, QA, visualización y comunicación ejecutiva en un producto reproducible. La separación entre persistencia, lógica y presentación permite evolucionar el MVP sin reescribirlo.
-
 ## Roadmap
 
 Finanzas y proveedores, compras/producción/stock, costos e inflación, y activos de comunicación para portfolio están detallados en [docs/roadmap.md](docs/roadmap.md).
@@ -142,7 +155,7 @@ Finanzas y proveedores, compras/producción/stock, costos e inflación, y activo
 
 Soy Matías Noero.
 
-Me apasiona transformar información compleja en herramientas simples que ayuden a las personas a comprender mejor su negocio y tomar decisiones con mayor confianza.
+Transformo información compleja en herramientas simples que ayudan a comprender el negocio y tomar mejores decisiones.
 
 Actualmente desarrollo proyectos relacionados con:
 
@@ -152,6 +165,5 @@ Actualmente desarrollo proyectos relacionados con:
 - Ciencia de Datos
 - Oil & Gas Analytics
 
-📫 LinkedIn
-
-📫 GitHub
+- GitHub: [github.com/mnoero23](https://github.com/mnoero23)
+- LinkedIn: [Agregar perfil de LinkedIn]
