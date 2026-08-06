@@ -114,9 +114,85 @@ def setup_page() -> None:
         /* Streamlit no ofrece tokens para el ancho útil ni la tipografía interna
            de st.metric. Estos dos selectores se limitan a esos ajustes visuales. */
         .block-container {
-            padding-top: 1.35rem;
+            padding-top: 1.5rem;
             padding-bottom: 2.5rem;
             max-width: 1480px;
+        }
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #102f3d 0%, #0b2632 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        [data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+            padding-top: 1.15rem;
+        }
+        [data-testid="stSidebar"] p,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
+            color: #d8e5e9;
+        }
+        [data-testid="stSidebar"] [data-testid="stImage"] {
+            margin: 0 auto 0.25rem;
+            max-width: 270px;
+        }
+        [data-testid="stSidebar"] [role="radiogroup"] {
+            gap: 0.35rem;
+        }
+        [data-testid="stSidebar"] [role="radiogroup"] label {
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 0.56rem 0.68rem;
+            transition: background 150ms ease, border-color 150ms ease;
+        }
+        [data-testid="stSidebar"] [role="radiogroup"] label:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.10);
+        }
+        [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
+            background: rgba(42, 157, 143, 0.22);
+            border-color: rgba(89, 201, 188, 0.55);
+            box-shadow: inset 3px 0 0 #4fc3b3;
+        }
+        [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) p {
+            color: #ffffff;
+            font-weight: 650;
+        }
+        [data-testid="stSidebar"] [data-testid="stDateInput"] input {
+            color: #f8fbfc;
+        }
+        [data-testid="stSidebar"] [data-testid="stDateInput"] > div > div {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+        .sidebar-section-label {
+            color: #83d5ca;
+            font-size: 0.72rem;
+            font-weight: 750;
+            letter-spacing: 0.13em;
+            margin: 1.05rem 0 0.45rem;
+        }
+        .sidebar-subtitle {
+            color: #a9c3cc;
+            font-size: 0.82rem;
+            line-height: 1.35;
+            margin-top: -0.25rem;
+        }
+        .sidebar-synthetic {
+            background: rgba(42, 157, 143, 0.14);
+            border: 1px solid rgba(89, 201, 188, 0.32);
+            border-radius: 11px;
+            color: #dff8f4;
+            font-size: 0.79rem;
+            line-height: 1.45;
+            margin-top: 1.15rem;
+            padding: 0.75rem 0.8rem;
+        }
+        .sidebar-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.10);
+            color: #8faab4;
+            font-size: 0.72rem;
+            line-height: 1.55;
+            margin-top: 1.3rem;
+            padding-top: 0.9rem;
         }
         [data-testid="stMetric"] {
             background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
@@ -133,18 +209,18 @@ def setup_page() -> None:
             letter-spacing: -0.025em;
         }
         .st-key-executive_header {
-            background: linear-gradient(120deg, #f1f6f9 0%, #f8fbfc 70%, #edf7f5 100%);
+            background: linear-gradient(120deg, #f4f8fa 0%, #ffffff 66%, #edf8f6 100%);
             border: 1px solid #d5e1e8;
-            border-left: 5px solid #1B4965;
+            border-left: 6px solid #2A9D8F;
             border-radius: 14px;
-            padding: 1.15rem 1.35rem 0.9rem;
-            margin-bottom: 0.75rem;
+            padding: 1.35rem 1.5rem 1.05rem;
+            margin-bottom: 1rem;
             box-shadow: 0 5px 18px rgba(27, 73, 101, 0.07);
         }
         .st-key-executive_header h1 {
             color: #173f58;
             letter-spacing: -0.035em;
-            padding-bottom: 0.15rem;
+            padding: 0.05rem 0 0.15rem;
         }
         .st-key-alerts_panel {
             background: #fbfcfd;
@@ -152,8 +228,9 @@ def setup_page() -> None:
             box-shadow: 0 3px 12px rgba(27, 73, 101, 0.05);
         }
         .st-key-sidebar_identity h2 {
-            color: #173f58;
+            color: #ffffff;
             padding-bottom: 0;
+            letter-spacing: -0.025em;
         }
         @media (max-width: 900px) {
             .block-container {padding-top: 1rem;}
@@ -181,6 +258,7 @@ def header(
     with st.container(key="executive_header"):
         main, metadata = st.columns([4, 1.25], vertical_alignment="center")
         with main:
+            st.caption("ENVAPLAST ANALYTICS · BUSINESS INTELLIGENCE PLATFORM")
             st.title(title, anchor=False)
             st.caption(subtitle)
         with metadata:
@@ -189,6 +267,32 @@ def header(
             if period:
                 st.caption("Período analizado")
                 st.markdown(f"**{period}**")
+
+
+def sidebar_section(label: str) -> None:
+    st.html(f'<div class="sidebar-section-label">{label}</div>')
+
+
+def sidebar_notice() -> None:
+    st.html(
+        """
+        <div class="sidebar-synthetic">
+            <strong>◉ Datos sintéticos</strong><br>
+            No representan empresas ni operaciones reales.
+        </div>
+        """
+    )
+
+
+def sidebar_footer() -> None:
+    st.html(
+        """
+        <div class="sidebar-footer">
+            © 2026 Envaplast Analytics<br>
+            Todos los derechos reservados.
+        </div>
+        """
+    )
 
 
 def section_heading(title: str, caption: str | None = None) -> None:

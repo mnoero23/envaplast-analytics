@@ -29,6 +29,9 @@ from ui import (
     number,
     render_chart,
     section_heading,
+    sidebar_footer,
+    sidebar_notice,
+    sidebar_section,
     setup_page,
 )
 
@@ -86,7 +89,7 @@ def summary(
 ) -> None:
     header(
         "Resumen ejecutivo",
-        "Visión integral del desempeño comercial, operativo y financiero.",
+        "Transformando datos comerciales en decisiones de negocio.",
         f"{start:%d/%m/%Y} — {end:%d/%m/%Y}",
     )
     current = sales[sales.invoice_date.dt.date.between(start, end)]
@@ -399,21 +402,26 @@ def main() -> None:
         st.image(str(APP_DIR / "assets" / "envaplast-logo.svg"), width="stretch")
         with st.container(key="sidebar_identity"):
             st.subheader("Envaplast Analytics", anchor=False)
-            st.caption("Inteligencia comercial y financiera")
+            st.html('<div class="sidebar-subtitle">Business Intelligence Platform</div>')
+        sidebar_section("PLATAFORMA")
         with st.expander("Sobre la empresa", icon=":material/factory:"):
             st.write(COMPANY_DESCRIPTION)
+        sidebar_section("NAVEGACIÓN")
         page = st.radio(
-            "Navegación",
+            "Seleccioná un tablero",
             list(NAVIGATION_ICONS),
             format_func=lambda option: f":material/{NAVIGATION_ICONS[option]}: {option}",
             key="navigation",
             width="stretch",
+            label_visibility="collapsed",
         )
     minimum, maximum = available_date_range(engine)
+    with st.sidebar:
+        sidebar_section("RANGO DE FECHAS")
     start, end = date_filter(minimum, maximum)
     with st.sidebar:
-        st.badge("Datos sintéticos", icon=":material/database:", color="green")
-        st.caption("No representan empresas ni operaciones reales.")
+        sidebar_notice()
+        sidebar_footer()
     try:
         sales, orders, ar, abc = load_data()
         {
