@@ -25,11 +25,11 @@ redColor = "#C94F3D"
 grayColor = "#6C757D"
 
 [theme.sidebar]
-backgroundColor = "#F7F9FA"
-secondaryBackgroundColor = "#EEF2F4"
-textColor = "#243746"
-primaryColor = "#1B4965"
-borderColor = "#E2E8EC"
+backgroundColor = "#102F3D"
+secondaryBackgroundColor = "#173F4E"
+textColor = "#F4FAFB"
+primaryColor = "#4FC3B3"
+borderColor = "#315563"
 
 [server]
 headless = true
