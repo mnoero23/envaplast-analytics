@@ -166,4 +166,4 @@ Actualmente desarrollo proyectos relacionados con:
 - Oil & Gas Analytics
 
 - GitHub: [github.com/mnoero23](https://github.com/mnoero23)
-- LinkedIn: [Agregar perfil de LinkedIn]
+- LinkedIn: [(https://www.linkedin.com/in/matias-noero-samper/)]
