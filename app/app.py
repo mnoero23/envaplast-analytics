@@ -20,6 +20,7 @@ from ui import (
     ManagementAlert,
     alerts_panel,
     chart,
+    company_profile,
     csv_download,
     dataframe,
     date_filter,
@@ -30,6 +31,9 @@ from ui import (
     render_chart,
     section_heading,
     setup_page,
+    sidebar_footer,
+    sidebar_notice,
+    sidebar_section,
 )
 
 from src.analytics import (
@@ -86,7 +90,7 @@ def summary(
 ) -> None:
     header(
         "Resumen ejecutivo",
-        "Visión integral del desempeño comercial, operativo y financiero.",
+        "Transformando datos comerciales en decisiones de negocio.",
         f"{start:%d/%m/%Y} — {end:%d/%m/%Y}",
     )
     current = sales[sales.invoice_date.dt.date.between(start, end)]
@@ -144,12 +148,7 @@ def summary(
         ],
         key="kpi_operational",
     )
-    st.caption(
-        "Envaplast es una empresa industrial argentina ficticia dedicada a soluciones "
-        "de envases plásticos para clientes mayoristas."
-    )
-    with st.expander("Sobre Envaplast", icon=":material/factory:"):
-        st.write(COMPANY_DESCRIPTION)
+    company_profile(COMPANY_DESCRIPTION)
 
     monthly = (
         sales.groupby(sales.invoice_date.dt.to_period("M"))
@@ -162,6 +161,10 @@ def summary(
         .reset_index()
     )
     monthly["invoice_date"] = monthly.invoice_date.astype(str)
+    section_heading(
+        "Evolución mensual de facturación",
+        "Tendencia de los últimos 18 meses disponibles para contextualizar el período.",
+    )
     render_chart(
         chart(
             monthly.tail(18),
@@ -399,21 +402,26 @@ def main() -> None:
         st.image(str(APP_DIR / "assets" / "envaplast-logo.svg"), width="stretch")
         with st.container(key="sidebar_identity"):
             st.subheader("Envaplast Analytics", anchor=False)
-            st.caption("Inteligencia comercial y financiera")
+            st.html('<div class="sidebar-subtitle">Business Intelligence Platform</div>')
+        sidebar_section("PLATAFORMA")
         with st.expander("Sobre la empresa", icon=":material/factory:"):
             st.write(COMPANY_DESCRIPTION)
+        sidebar_section("NAVEGACIÓN")
         page = st.radio(
-            "Navegación",
+            "Seleccioná un tablero",
             list(NAVIGATION_ICONS),
             format_func=lambda option: f":material/{NAVIGATION_ICONS[option]}: {option}",
             key="navigation",
             width="stretch",
+            label_visibility="collapsed",
         )
     minimum, maximum = available_date_range(engine)
+    with st.sidebar:
+        sidebar_section("RANGO DE FECHAS")
     start, end = date_filter(minimum, maximum)
     with st.sidebar:
-        st.badge("Datos sintéticos", icon=":material/database:", color="green")
-        st.caption("No representan empresas ni operaciones reales.")
+        sidebar_notice()
+        sidebar_footer()
     try:
         sales, orders, ar, abc = load_data()
         {
