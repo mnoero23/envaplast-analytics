@@ -139,6 +139,10 @@ def setup_page() -> None:
             letter-spacing: -0.035em;
             line-height: 1.15;
         }
+        [data-testid="stMetricDelta"] {
+            font-size: 0.72rem;
+            white-space: nowrap;
+        }
         [class*="st-key-kpi_"] {
             flex-wrap: nowrap;
         }

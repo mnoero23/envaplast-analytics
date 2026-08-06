@@ -400,16 +400,25 @@ def main() -> None:
         with st.container(key="sidebar_identity"):
             st.subheader("Envaplast Analytics", anchor=False)
             st.caption("Inteligencia comercial y financiera")
-        with st.expander("Sobre la empresa", icon=":material/factory:"):
-            st.write(COMPANY_DESCRIPTION)
+        st.divider()
+        with st.container(key="sidebar_nav_label"):
+            st.caption("Menú principal")
         page = st.radio(
             "Navegación",
             list(NAVIGATION_ICONS),
             format_func=lambda option: f":material/{NAVIGATION_ICONS[option]}: {option}",
             key="navigation",
             width="stretch",
+            label_visibility="collapsed",
         )
+        with st.container(key="sidebar_context_label"):
+            st.caption("Contexto")
+        with st.expander("Sobre la empresa", icon=":material/factory:"):
+            st.write(COMPANY_DESCRIPTION)
     minimum, maximum = available_date_range(engine)
+    with st.sidebar:
+        with st.container(key="sidebar_filter_label"):
+            st.caption("Filtros")
     start, end = date_filter(minimum, maximum)
     with st.sidebar:
         st.badge("Datos sintéticos", icon=":material/database:", color="green")
