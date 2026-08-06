@@ -95,6 +95,31 @@ SPANISH_LABELS = {
 type MetricItem = tuple[str, str, str | None]
 type AlertLevel = Literal["crítico", "atención", "información", "correcto"]
 
+KPI_ICONS = {
+    "Facturación": "payments",
+    "Cuentas por cobrar": "account_balance_wallet",
+    "Deuda vencida": "event_busy",
+    "Pedidos pendientes": "pending_actions",
+    "Unidades vendidas": "inventory_2",
+    "Pedidos ingresados": "receipt_long",
+    "Cartera vencida": "percent",
+    "Días promedio de cobro": "schedule",
+    "Unidades": "inventory_2",
+    "Precio promedio": "sell",
+    "Pedidos": "shopping_cart",
+    "Importe ingresado": "paid",
+    "Pendientes": "pending_actions",
+    "Cumplimiento prometido": "verified",
+    "Saldo pendiente": "account_balance_wallet",
+    "Saldo vencido": "event_busy",
+    "Mora promedio": "schedule",
+    "Sobre límite": "credit_card_off",
+    "Clientes A": "looks_one",
+    "Clientes B": "looks_two",
+    "Clientes C": "looks_3",
+    "Top 10 / ventas": "leaderboard",
+}
+
 
 @dataclass(frozen=True)
 class ManagementAlert:
@@ -195,18 +220,40 @@ def setup_page() -> None:
             padding-top: 0.9rem;
         }
         [data-testid="stMetric"] {
-            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-            box-shadow: 0 3px 12px rgba(27, 73, 101, 0.07);
+            background: linear-gradient(145deg, #ffffff 0%, #f8fbfc 100%);
+            border: 1px solid #dbe6eb;
+            border-top: 3px solid #2a9d8f;
+            box-shadow: 0 6px 18px rgba(18, 55, 72, 0.08);
+            transition: transform 160ms ease, box-shadow 160ms ease;
+        }
+        [data-testid="stMetric"]:hover {
+            box-shadow: 0 9px 24px rgba(18, 55, 72, 0.12);
+            transform: translateY(-2px);
         }
         [data-testid="stMetricLabel"] {
             min-height: 2.15rem;
             align-items: flex-start;
-            color: #526476;
+            color: #506675;
+            font-weight: 600;
         }
         [data-testid="stMetricValue"] {
             color: #173f58;
-            font-weight: 650;
+            font-weight: 700;
             letter-spacing: -0.025em;
+        }
+        [data-testid="stMetricDelta"] {
+            background: #edf5f3;
+            border-radius: 999px;
+            padding: 0.18rem 0.48rem;
+            width: fit-content;
+        }
+        [class*="st-key-kpi_"] [data-testid="stHorizontalBlock"] {
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+        [class*="st-key-kpi_"] [data-testid="stHorizontalBlock"] > div {
+            flex: 1 1 215px;
+            min-width: 0;
         }
         .st-key-executive_header {
             background: linear-gradient(120deg, #f4f8fa 0%, #ffffff 66%, #edf8f6 100%);
@@ -304,13 +351,14 @@ def section_heading(title: str, caption: str | None = None) -> None:
 def metric_row(metrics: Sequence[MetricItem], *, key: str) -> None:
     with st.container(horizontal=True, gap="small", key=key):
         for label, value, delta in metrics:
+            icon = KPI_ICONS.get(label, "analytics")
             st.metric(
-                label,
+                f":material/{icon}: {label}",
                 value,
                 delta,
                 border=True,
                 width="stretch",
-                height=128,
+                height=140,
             )
 
 
