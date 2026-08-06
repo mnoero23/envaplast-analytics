@@ -20,6 +20,7 @@ from ui import (
     ManagementAlert,
     alerts_panel,
     chart,
+    company_profile,
     csv_download,
     dataframe,
     date_filter,
@@ -29,10 +30,10 @@ from ui import (
     number,
     render_chart,
     section_heading,
+    setup_page,
     sidebar_footer,
     sidebar_notice,
     sidebar_section,
-    setup_page,
 )
 
 from src.analytics import (
@@ -147,12 +148,7 @@ def summary(
         ],
         key="kpi_operational",
     )
-    st.caption(
-        "Envaplast es una empresa industrial argentina ficticia dedicada a soluciones "
-        "de envases plásticos para clientes mayoristas."
-    )
-    with st.expander("Sobre Envaplast", icon=":material/factory:"):
-        st.write(COMPANY_DESCRIPTION)
+    company_profile(COMPANY_DESCRIPTION)
 
     monthly = (
         sales.groupby(sales.invoice_date.dt.to_period("M"))
@@ -165,6 +161,10 @@ def summary(
         .reset_index()
     )
     monthly["invoice_date"] = monthly.invoice_date.astype(str)
+    section_heading(
+        "Evolución mensual de facturación",
+        "Tendencia de los últimos 18 meses disponibles para contextualizar el período.",
+    )
     render_chart(
         chart(
             monthly.tail(18),

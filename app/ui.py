@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
+from html import escape
 from typing import Literal
 
 import pandas as pd
@@ -142,6 +143,44 @@ def setup_page() -> None:
             padding-top: 1.5rem;
             padding-bottom: 2.5rem;
             max-width: 1480px;
+        }
+        h1, h2, h3 {
+            letter-spacing: -0.025em;
+        }
+        .section-heading {
+            border-left: 3px solid #2a9d8f;
+            margin: 1.65rem 0 0.8rem;
+            padding: 0.08rem 0 0.08rem 0.8rem;
+        }
+        .section-heading h2 {
+            color: #173f58;
+            font-size: 1.22rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin: 0;
+        }
+        .section-heading p {
+            color: #667b89;
+            font-size: 0.86rem;
+            line-height: 1.45;
+            margin: 0.18rem 0 0;
+        }
+        .st-key-company_profile {
+            background: linear-gradient(100deg, #f2f8f8 0%, #ffffff 100%);
+            border-color: #d5e6e4;
+            box-shadow: 0 5px 16px rgba(18, 55, 72, 0.06);
+            margin-top: 1.2rem;
+        }
+        .company-profile-icon {
+            align-items: center;
+            background: #dff2ef;
+            border-radius: 12px;
+            color: #147d71;
+            display: flex;
+            font-size: 1.7rem;
+            height: 3.25rem;
+            justify-content: center;
+            width: 3.25rem;
         }
         [data-testid="stSidebar"] {
             background: linear-gradient(180deg, #102f3d 0%, #0b2632 100%);
@@ -343,9 +382,23 @@ def sidebar_footer() -> None:
 
 
 def section_heading(title: str, caption: str | None = None) -> None:
-    st.subheader(title, anchor=False)
-    if caption:
-        st.caption(caption)
+    caption_html = f"<p>{escape(caption)}</p>" if caption else ""
+    st.html(f'<div class="section-heading"><h2>{escape(title)}</h2>{caption_html}</div>')
+
+
+def company_profile(description: str) -> None:
+    with st.container(border=True, key="company_profile"):
+        icon, content = st.columns([0.45, 7], vertical_alignment="center")
+        with icon:
+            st.html('<div class="company-profile-icon">▦</div>')
+        with content:
+            st.markdown("**Sobre Envaplast**")
+            st.caption(
+                "Pyme industrial argentina ficticia especializada en soluciones "
+                "de envases plásticos para el canal mayorista."
+            )
+        with st.expander("Conocer el contexto de la empresa", icon=":material/factory:"):
+            st.write(description)
 
 
 def metric_row(metrics: Sequence[MetricItem], *, key: str) -> None:
