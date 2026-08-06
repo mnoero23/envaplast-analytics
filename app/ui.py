@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -11,7 +12,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-COLORS = ["#1B4965", "#2A9D8F", "#E9C46A", "#E76F51", "#6C757D"]
+COLORS = ["#2A9D8F", "#1B4965", "#69C5B8", "#E9C46A", "#E76F51", "#6C757D"]
 
 MONEY_COLUMNS = {
     "subtotal",
@@ -313,14 +314,44 @@ def setup_page() -> None:
             border-color: #d8e2e9;
             box-shadow: 0 3px 12px rgba(27, 73, 101, 0.05);
         }
+        [class*="st-key-chart_card_"] {
+            background: #ffffff;
+            border-color: #dbe6eb;
+            box-shadow: 0 7px 22px rgba(18, 55, 72, 0.08);
+            padding: 0.35rem 0.55rem 0.15rem;
+        }
+        [class*="st-key-chart_card_"] [data-testid="stPlotlyChart"] {
+            border: 0;
+            box-shadow: none;
+        }
         .st-key-sidebar_identity h2 {
             color: #ffffff;
             padding-bottom: 0;
             letter-spacing: -0.025em;
         }
         @media (max-width: 900px) {
-            .block-container {padding-top: 1rem;}
-            .st-key-executive_header {padding: 1rem 1rem 0.75rem;}
+            .block-container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+                padding-top: 1rem;
+            }
+            .st-key-executive_header {
+                padding: 1rem 1rem 0.75rem;
+            }
+            [class*="st-key-kpi_"] [data-testid="stHorizontalBlock"] > div {
+                flex-basis: calc(50% - 0.5rem);
+            }
+        }
+        @media (max-width: 620px) {
+            [class*="st-key-kpi_"] [data-testid="stHorizontalBlock"] > div {
+                flex-basis: 100%;
+            }
+            [data-testid="stMetric"] {
+                min-height: 132px;
+            }
+            .section-heading {
+                margin-top: 1.3rem;
+            }
         }
         </style>
         """
@@ -531,8 +562,8 @@ def style_figure(
     value_format: Literal["money", "number", "percentage"] | None = None,
 ) -> go.Figure:
     fig.update_layout(
-        margin=dict(l=18, r=18, t=62, b=20),
-        height=390,
+        margin=dict(l=22, r=22, t=68, b=24),
+        height=410,
         legend_title_text="",
         legend=dict(
             orientation="h",
@@ -543,9 +574,9 @@ def style_figure(
         ),
         hovermode="x unified" if kind == "line" else "closest",
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="#FFFFFF",
+        plot_bgcolor="#FCFEFE",
         font=dict(color="#334155", size=13, family="Arial, sans-serif"),
-        title=dict(font=dict(color="#1B4965", size=17), x=0.01, xanchor="left"),
+        title=dict(font=dict(color="#173F58", size=18), x=0.01, xanchor="left"),
         hoverlabel=dict(bgcolor="#FFFFFF", font_color="#1F2937", bordercolor="#CBD5E1"),
         bargap=0.28,
         separators=",.",
@@ -577,14 +608,20 @@ def style_figure(
     elif value_format == "percentage":
         axis(ticksuffix=" %", tickformat=".1f")
     if kind == "line":
-        fig.update_traces(line_width=3, marker=dict(size=6), mode="lines+markers")
+        fig.update_traces(
+            line_width=3,
+            marker=dict(size=6, line=dict(color="#FFFFFF", width=1.5)),
+            mode="lines+markers",
+        )
     else:
         fig.update_traces(marker_line_width=0, opacity=0.92, cliponaxis=False)
     return fig
 
 
 def render_chart(fig: go.Figure) -> None:
-    with st.container(border=True):
+    title = str(fig.layout.title.text or "grafico")
+    slug = re.sub(r"[^a-z0-9]+", "_", title.lower()).strip("_")
+    with st.container(border=True, key=f"chart_card_{slug}"):
         st.plotly_chart(
             fig,
             width="stretch",
