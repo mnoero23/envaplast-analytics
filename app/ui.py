@@ -12,7 +12,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-COLORS = ["#2A9D8F", "#1B4965", "#69C5B8", "#E9C46A", "#E76F51", "#6C757D"]
+COLORS = ["#1B4965", "#2A9D8F", "#D9A441", "#D86C4F", "#71808C"]
 
 MONEY_COLUMNS = {
     "subtotal",
@@ -138,12 +138,13 @@ def setup_page() -> None:
     st.html(
         """
         <style>
-        /* Streamlit no ofrece tokens para el ancho útil ni la tipografía interna
-           de st.metric. Estos dos selectores se limitan a esos ajustes visuales. */
+        /* Streamlit no ofrece tokens para el ancho útil, la grilla de métricas ni
+           su tipografía interna. Los selectores data-testid quedan acotados a esos
+           ajustes visuales y no alteran el comportamiento de los componentes. */
         .block-container {
             padding-top: 1.5rem;
-            padding-bottom: 2.5rem;
-            max-width: 1480px;
+            padding-bottom: 3.5rem;
+            max-width: 1380px;
         }
         h1, h2, h3 {
             letter-spacing: -0.025em;
@@ -260,26 +261,42 @@ def setup_page() -> None:
             padding-top: 0.9rem;
         }
         [data-testid="stMetric"] {
-            background: linear-gradient(145deg, #ffffff 0%, #f8fbfc 100%);
-            border: 1px solid #dbe6eb;
-            border-top: 3px solid #2a9d8f;
-            box-shadow: 0 6px 18px rgba(18, 55, 72, 0.08);
-            transition: transform 160ms ease, box-shadow 160ms ease;
-        }
-        [data-testid="stMetric"]:hover {
-            box-shadow: 0 9px 24px rgba(18, 55, 72, 0.12);
-            transform: translateY(-2px);
+            background: #ffffff;
+            border-color: #dfe6eb;
+            box-shadow: 0 1px 2px rgba(18, 38, 52, 0.035);
+            padding: 1rem 1rem 0.9rem;
         }
         [data-testid="stMetricLabel"] {
             min-height: 2.15rem;
             align-items: flex-start;
-            color: #506675;
-            font-weight: 600;
+            color: #61717f;
+            font-size: 0.82rem;
+            font-weight: 550;
+        }
+        [data-testid="stMetricLabel"] p {
+            overflow: visible;
+            text-overflow: clip;
+            white-space: normal;
         }
         [data-testid="stMetricValue"] {
-            color: #173f58;
-            font-weight: 700;
-            letter-spacing: -0.025em;
+            color: #183c53;
+            font-size: clamp(1.2rem, 1.65vw, 1.55rem);
+            font-weight: 640;
+            letter-spacing: -0.035em;
+            line-height: 1.15;
+        }
+        [data-testid="stMetricDelta"] {
+            font-size: 0.72rem;
+            white-space: nowrap;
+        }
+        [class*="st-key-kpi_"] {
+            flex-wrap: nowrap;
+        }
+        [class*="st-key-kpi_"] > [data-testid="stElementContainer"] {
+            flex: 1 1 0 !important;
+        }
+        [class*="st-key-kpi_"] [data-testid="stMetric"] {
+            min-width: 0;
         }
         [data-testid="stMetricDelta"] {
             background: #edf5f3;
@@ -296,23 +313,26 @@ def setup_page() -> None:
             min-width: 0;
         }
         .st-key-executive_header {
-            background: linear-gradient(120deg, #f4f8fa 0%, #ffffff 66%, #edf8f6 100%);
-            border: 1px solid #d5e1e8;
-            border-left: 6px solid #2A9D8F;
-            border-radius: 14px;
-            padding: 1.35rem 1.5rem 1.05rem;
+            background: #f8fafb;
+            border: 1px solid #dfe7ec;
+            border-left: 3px solid #1b4965;
+            border-radius: 10px;
+            padding: 1.3rem 1.4rem 1.05rem;
             margin-bottom: 1rem;
-            box-shadow: 0 5px 18px rgba(27, 73, 101, 0.07);
         }
         .st-key-executive_header h1 {
-            color: #173f58;
-            letter-spacing: -0.035em;
-            padding: 0.05rem 0 0.15rem;
+            color: #183c53;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+            padding-bottom: 0.25rem;
+        }
+        .st-key-executive_header p {
+            line-height: 1.45;
         }
         .st-key-alerts_panel {
             background: #fbfcfd;
-            border-color: #d8e2e9;
-            box-shadow: 0 3px 12px rgba(27, 73, 101, 0.05);
+            border-color: #dfe6eb;
+            box-shadow: none;
         }
         [class*="st-key-chart_card_"] {
             background: #ffffff;
@@ -334,17 +354,21 @@ def setup_page() -> None:
                 padding-left: 1rem;
                 padding-right: 1rem;
                 padding-top: 1rem;
+                padding-bottom: 2.5rem;
             }
             .st-key-executive_header {
-                padding: 1rem 1rem 0.75rem;
+                padding: 1rem 1rem 0.8rem;
             }
-            [class*="st-key-kpi_"] [data-testid="stHorizontalBlock"] > div {
-                flex-basis: calc(50% - 0.5rem);
+            [class*="st-key-kpi_"] {
+                flex-wrap: wrap;
+            }
+            [class*="st-key-kpi_"] > [data-testid="stElementContainer"] {
+                flex-basis: calc(50% - 0.5rem) !important;
             }
         }
         @media (max-width: 620px) {
-            [class*="st-key-kpi_"] [data-testid="stHorizontalBlock"] > div {
-                flex-basis: 100%;
+            [class*="st-key-kpi_"] > [data-testid="stElementContainer"] {
+                flex-basis: 100% !important;
             }
             [data-testid="stMetric"] {
                 min-height: 132px;
@@ -442,7 +466,7 @@ def metric_row(metrics: Sequence[MetricItem], *, key: str) -> None:
                 delta,
                 border=True,
                 width="stretch",
-                height=140,
+                height=118,
             )
 
 
@@ -562,8 +586,8 @@ def style_figure(
     value_format: Literal["money", "number", "percentage"] | None = None,
 ) -> go.Figure:
     fig.update_layout(
-        margin=dict(l=22, r=22, t=68, b=24),
-        height=410,
+        margin=dict(l=14, r=14, t=58, b=16),
+        height=370,
         legend_title_text="",
         legend=dict(
             orientation="h",
@@ -574,29 +598,33 @@ def style_figure(
         ),
         hovermode="x unified" if kind == "line" else "closest",
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="#FCFEFE",
-        font=dict(color="#334155", size=13, family="Arial, sans-serif"),
-        title=dict(font=dict(color="#173F58", size=18), x=0.01, xanchor="left"),
-        hoverlabel=dict(bgcolor="#FFFFFF", font_color="#1F2937", bordercolor="#CBD5E1"),
-        bargap=0.28,
+        plot_bgcolor="#FFFFFF",
+        font=dict(
+            color="#41515D",
+            size=12,
+            family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        ),
+        title=dict(font=dict(color="#183C53", size=16), x=0.01, xanchor="left"),
+        hoverlabel=dict(bgcolor="#FFFFFF", font_color="#202B33", bordercolor="#D6E0E6"),
+        bargap=0.34,
         separators=",.",
         uniformtext_minsize=10,
         uniformtext_mode="hide",
     )
     fig.update_xaxes(
         showgrid=value_axis == "x",
-        gridcolor="#E8EEF3",
-        linecolor="#DCE5EC",
-        tickfont=dict(color="#64748B"),
+        gridcolor="#EEF2F4",
+        linecolor="#E1E7EB",
+        tickfont=dict(color="#6A7A86"),
         automargin=True,
         separatethousands=True,
     )
     fig.update_yaxes(
         showgrid=value_axis == "y",
-        gridcolor="#E8EEF3",
+        gridcolor="#EEF2F4",
         gridwidth=1,
         zeroline=False,
-        tickfont=dict(color="#64748B"),
+        tickfont=dict(color="#6A7A86"),
         automargin=True,
         separatethousands=True,
     )
@@ -608,13 +636,9 @@ def style_figure(
     elif value_format == "percentage":
         axis(ticksuffix=" %", tickformat=".1f")
     if kind == "line":
-        fig.update_traces(
-            line_width=3,
-            marker=dict(size=6, line=dict(color="#FFFFFF", width=1.5)),
-            mode="lines+markers",
-        )
+        fig.update_traces(line_width=2.5, marker=dict(size=5), mode="lines+markers")
     else:
-        fig.update_traces(marker_line_width=0, opacity=0.92, cliponaxis=False)
+        fig.update_traces(marker_line_width=0, opacity=0.96, cliponaxis=False)
     return fig
 
 
