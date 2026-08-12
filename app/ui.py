@@ -142,47 +142,37 @@ def setup_page() -> None:
            su tipografía interna. Los selectores data-testid quedan acotados a esos
            ajustes visuales y no alteran el comportamiento de los componentes. */
         .block-container {
-            padding-top: 1.5rem;
-            padding-bottom: 3.5rem;
-            max-width: 1380px;
+            padding-top: 1.15rem;
+            padding-bottom: 2.75rem;
+            max-width: 1280px;
         }
         h1, h2, h3 {
             letter-spacing: -0.025em;
         }
         .section-heading {
             border-left: 3px solid #2a9d8f;
-            margin: 1.65rem 0 0.8rem;
-            padding: 0.08rem 0 0.08rem 0.8rem;
+            margin: 1.2rem 0 0.62rem;
+            padding: 0.04rem 0 0.04rem 0.68rem;
         }
         .section-heading h2 {
-            color: #173f58;
-            font-size: 1.22rem;
+            color: #172b35;
+            font-size: 1.05rem;
             font-weight: 700;
             line-height: 1.3;
             margin: 0;
         }
         .section-heading p {
-            color: #667b89;
-            font-size: 0.86rem;
+            color: #61747e;
+            font-size: 0.8rem;
             line-height: 1.45;
-            margin: 0.18rem 0 0;
+            margin: 0.12rem 0 0;
         }
         .st-key-company_profile {
-            background: linear-gradient(100deg, #f2f8f8 0%, #ffffff 100%);
-            border-color: #d5e6e4;
-            box-shadow: 0 5px 16px rgba(18, 55, 72, 0.06);
-            margin-top: 1.2rem;
-        }
-        .company-profile-icon {
-            align-items: center;
-            background: #dff2ef;
-            border-radius: 12px;
-            color: #147d71;
-            display: flex;
-            font-size: 1.7rem;
-            height: 3.25rem;
-            justify-content: center;
-            width: 3.25rem;
+            background: linear-gradient(100deg, #e8f3f1 0%, #ffffff 72%);
+            border-color: #cfe1de;
+            box-shadow: none;
+            margin-top: 0.8rem;
+            padding: 0.7rem 0.85rem;
         }
         [data-testid="stSidebar"] {
             background: linear-gradient(180deg, #102f3d 0%, #0b2632 100%);
@@ -197,8 +187,8 @@ def setup_page() -> None:
             color: #d8e5e9;
         }
         [data-testid="stSidebar"] [data-testid="stImage"] {
-            margin: 0 auto 0.25rem;
-            max-width: 270px;
+            margin: 0 auto 0.15rem;
+            max-width: 210px;
         }
         [data-testid="stSidebar"] [role="radiogroup"] {
             gap: 0.35rem;
@@ -206,8 +196,17 @@ def setup_page() -> None:
         [data-testid="stSidebar"] [role="radiogroup"] label {
             border: 1px solid transparent;
             border-radius: 10px;
-            padding: 0.56rem 0.68rem;
+            padding: 0.62rem 0.7rem;
             transition: background 150ms ease, border-color 150ms ease;
+        }
+        [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
+            display: none;
+        }
+        [data-testid="stRadioOption"] > div > div > div:first-child {
+            display: none;
+        }
+        [data-testid="stRadioOption"] > div > div {
+            gap: 0;
         }
         [data-testid="stSidebar"] [role="radiogroup"] label:hover {
             background: rgba(255, 255, 255, 0.07);
@@ -230,11 +229,11 @@ def setup_page() -> None:
             border-color: rgba(255, 255, 255, 0.18);
         }
         .sidebar-section-label {
-            color: #83d5ca;
-            font-size: 0.72rem;
+            color: #78d4c8;
+            font-size: 0.68rem;
             font-weight: 750;
             letter-spacing: 0.13em;
-            margin: 1.05rem 0 0.45rem;
+            margin: 0.9rem 0 0.38rem;
         }
         .sidebar-subtitle {
             color: #a9c3cc;
@@ -249,8 +248,8 @@ def setup_page() -> None:
             color: #dff8f4;
             font-size: 0.79rem;
             line-height: 1.45;
-            margin-top: 1.15rem;
-            padding: 0.75rem 0.8rem;
+            margin-top: 0.9rem;
+            padding: 0.62rem 0.72rem;
         }
         .sidebar-footer {
             border-top: 1px solid rgba(255, 255, 255, 0.10);
@@ -261,17 +260,18 @@ def setup_page() -> None:
             padding-top: 0.9rem;
         }
         [data-testid="stMetric"] {
-            background: #ffffff;
-            border-color: #dfe6eb;
-            box-shadow: 0 1px 2px rgba(18, 38, 52, 0.035);
-            padding: 1rem 1rem 0.9rem;
+            background: linear-gradient(145deg, #ffffff 0%, #fbfcfc 100%);
+            border-color: #d7e0e3;
+            border-top: 3px solid #0f766e;
+            box-shadow: 0 5px 16px rgba(20, 48, 60, 0.055);
+            padding: 0.72rem 0.82rem 0.68rem;
         }
         [data-testid="stMetricLabel"] {
-            min-height: 2.15rem;
+            min-height: 1.65rem;
             align-items: flex-start;
-            color: #61717f;
-            font-size: 0.82rem;
-            font-weight: 550;
+            color: #536872;
+            font-size: 0.78rem;
+            font-weight: 600;
         }
         [data-testid="stMetricLabel"] p {
             overflow: visible;
@@ -279,14 +279,14 @@ def setup_page() -> None:
             white-space: normal;
         }
         [data-testid="stMetricValue"] {
-            color: #183c53;
-            font-size: clamp(1.2rem, 1.65vw, 1.55rem);
-            font-weight: 640;
+            color: #172f3b;
+            font-size: clamp(1.16rem, 1.55vw, 1.48rem);
+            font-weight: 700;
             letter-spacing: -0.035em;
             line-height: 1.15;
         }
         [data-testid="stMetricDelta"] {
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             white-space: nowrap;
         }
         [class*="st-key-kpi_"] {
@@ -299,9 +299,9 @@ def setup_page() -> None:
             min-width: 0;
         }
         [data-testid="stMetricDelta"] {
-            background: #edf5f3;
+            background: #e7f2f0;
             border-radius: 999px;
-            padding: 0.18rem 0.48rem;
+            padding: 0.13rem 0.42rem;
             width: fit-content;
         }
         [class*="st-key-kpi_"] [data-testid="stHorizontalBlock"] {
@@ -313,21 +313,28 @@ def setup_page() -> None:
             min-width: 0;
         }
         .st-key-executive_header {
-            background: #f8fafb;
-            border: 1px solid #dfe7ec;
-            border-left: 3px solid #1b4965;
-            border-radius: 10px;
-            padding: 1.3rem 1.4rem 1.05rem;
-            margin-bottom: 1rem;
+            background: linear-gradient(112deg, #173f4c 0%, #102a34 72%, #0f766e 145%);
+            border: 0;
+            border-radius: 14px;
+            box-shadow: 0 10px 28px rgba(16, 42, 52, 0.16);
+            padding: 1.05rem 1.2rem 0.9rem;
+            margin-bottom: 0.75rem;
         }
         .st-key-executive_header h1 {
-            color: #183c53;
+            color: #ffffff;
             letter-spacing: -0.04em;
             line-height: 1.1;
-            padding-bottom: 0.25rem;
+            padding-bottom: 0.12rem;
         }
         .st-key-executive_header p {
+            color: #d8e8eb;
             line-height: 1.45;
+        }
+        .st-key-executive_header [data-testid="stCaptionContainer"] {
+            color: #b9d0d5;
+        }
+        .st-key-executive_header [data-testid="stBadge"] {
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16);
         }
         .st-key-alerts_panel {
             background: #fbfcfd;
@@ -336,18 +343,30 @@ def setup_page() -> None:
         }
         [class*="st-key-chart_card_"] {
             background: #ffffff;
-            border-color: #dbe6eb;
-            box-shadow: 0 7px 22px rgba(18, 55, 72, 0.08);
-            padding: 0.35rem 0.55rem 0.15rem;
+            border-color: #d7e0e3;
+            box-shadow: 0 5px 18px rgba(20, 48, 60, 0.055);
+            padding: 0.18rem 0.4rem 0.05rem;
         }
         [class*="st-key-chart_card_"] [data-testid="stPlotlyChart"] {
             border: 0;
             box-shadow: none;
         }
-        .st-key-sidebar_identity h2 {
-            color: #ffffff;
-            padding-bottom: 0;
-            letter-spacing: -0.025em;
+        .st-key-sidebar_tagline {
+            color: #a9c4cb;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            margin-top: -0.15rem;
+            text-align: center;
+        }
+        [data-testid="stDataFrame"] {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(20, 48, 60, 0.04);
+        }
+        [data-testid="stDownloadButton"] {
+            margin-left: auto;
+            width: fit-content;
         }
         @media (max-width: 900px) {
             .block-container {
@@ -357,7 +376,7 @@ def setup_page() -> None:
                 padding-bottom: 2.5rem;
             }
             .st-key-executive_header {
-                padding: 1rem 1rem 0.8rem;
+                padding: 0.9rem 0.95rem 0.72rem;
             }
             [class*="st-key-kpi_"] {
                 flex-wrap: wrap;
@@ -371,7 +390,7 @@ def setup_page() -> None:
                 flex-basis: 100% !important;
             }
             [data-testid="stMetric"] {
-                min-height: 132px;
+                min-height: 104px;
             }
             .section-heading {
                 margin-top: 1.3rem;
@@ -394,12 +413,12 @@ def header(
     title: str,
     subtitle: str,
     period: str | None = None,
-    badge: str | None = "Datos sintéticos",
+    badge: str | None = None,
 ) -> None:
     with st.container(key="executive_header"):
         main, metadata = st.columns([4, 1.25], vertical_alignment="center")
         with main:
-            st.caption("ENVAPLAST ANALYTICS · BUSINESS INTELLIGENCE PLATFORM")
+            st.caption("ENVAPLAST · INTELIGENCIA COMERCIAL")
             st.title(title, anchor=False)
             st.caption(subtitle)
         with metadata:
@@ -442,17 +461,15 @@ def section_heading(title: str, caption: str | None = None) -> None:
 
 
 def company_profile(description: str) -> None:
-    with st.container(border=True, key="company_profile"):
-        icon, content = st.columns([0.45, 7], vertical_alignment="center")
-        with icon:
-            st.html('<div class="company-profile-icon">▦</div>')
-        with content:
-            st.markdown("**Sobre Envaplast**")
-            st.caption(
-                "Pyme industrial argentina ficticia especializada en soluciones "
-                "de envases plásticos para el canal mayorista."
-            )
-        with st.expander("Conocer el contexto de la empresa", icon=":material/factory:"):
+    with st.container(
+        border=True,
+        horizontal=True,
+        vertical_alignment="center",
+        key="company_profile",
+    ):
+        st.badge("Caso de negocio", icon=":material/factory:", color="green")
+        st.caption("Pyme industrial argentina ficticia especializada en envases plásticos.")
+        with st.popover("Ver contexto", icon=":material/visibility:"):
             st.write(description)
 
 
@@ -466,7 +483,7 @@ def metric_row(metrics: Sequence[MetricItem], *, key: str) -> None:
                 delta,
                 border=True,
                 width="stretch",
-                height=118,
+                height=104,
             )
 
 
@@ -483,7 +500,7 @@ def alerts_panel(alerts: Sequence[ManagementAlert]) -> None:
             "No se detectaron desvíos relevantes con las reglas actuales.",
         )
     ]
-    with st.container(border=True, key="alerts_panel"):
+    with st.container(border=True, height=310, key="alerts_panel"):
         st.subheader("Alertas de gestión", anchor=False)
         st.caption("Señales generadas a partir de las reglas actuales del tablero.")
         for alert in visible_alerts:
@@ -586,8 +603,8 @@ def style_figure(
     value_format: Literal["money", "number", "percentage"] | None = None,
 ) -> go.Figure:
     fig.update_layout(
-        margin=dict(l=14, r=14, t=58, b=16),
-        height=370,
+        margin=dict(l=12, r=12, t=48, b=12),
+        height=310,
         legend_title_text="",
         legend=dict(
             orientation="h",
@@ -598,13 +615,13 @@ def style_figure(
         ),
         hovermode="x unified" if kind == "line" else "closest",
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="#FFFFFF",
+        plot_bgcolor="rgba(0,0,0,0)",
         font=dict(
             color="#41515D",
             size=12,
             family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
         ),
-        title=dict(font=dict(color="#183C53", size=16), x=0.01, xanchor="left"),
+        title=dict(font=dict(color="#172F3B", size=15), x=0.01, xanchor="left"),
         hoverlabel=dict(bgcolor="#FFFFFF", font_color="#202B33", bordercolor="#D6E0E6"),
         bargap=0.34,
         separators=",.",
@@ -618,6 +635,7 @@ def style_figure(
         tickfont=dict(color="#6A7A86"),
         automargin=True,
         separatethousands=True,
+        title_text=None,
     )
     fig.update_yaxes(
         showgrid=value_axis == "y",
@@ -627,6 +645,7 @@ def style_figure(
         tickfont=dict(color="#6A7A86"),
         automargin=True,
         separatethousands=True,
+        title_text=None,
     )
     axis = fig.update_xaxes if value_axis == "x" else fig.update_yaxes
     if value_format == "money":
@@ -636,9 +655,20 @@ def style_figure(
     elif value_format == "percentage":
         axis(ticksuffix=" %", tickformat=".1f")
     if kind == "line":
-        fig.update_traces(line_width=2.5, marker=dict(size=5), mode="lines+markers")
+        fig.update_traces(
+            line=dict(color="#0F766E", width=2.8),
+            marker=dict(size=5, color="#0F766E"),
+            mode="lines+markers",
+            fill="tozeroy",
+            fillcolor="rgba(15, 118, 110, 0.08)",
+        )
     else:
-        fig.update_traces(marker_line_width=0, opacity=0.96, cliponaxis=False)
+        fig.update_traces(
+            marker_color="#1B4965",
+            marker_line_width=0,
+            opacity=0.94,
+            cliponaxis=False,
+        )
     return fig
 
 
@@ -653,7 +683,7 @@ def render_chart(fig: go.Figure) -> None:
         )
 
 
-def dataframe(frame: pd.DataFrame, *, key: str, height: int = 420) -> None:
+def dataframe(frame: pd.DataFrame, *, key: str, height: int = 360) -> None:
     translated = translate_columns(frame)
     config: dict[str, object] = {}
     for original, label in zip(frame.columns, translated.columns, strict=True):

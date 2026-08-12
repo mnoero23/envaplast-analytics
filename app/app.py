@@ -81,7 +81,7 @@ def load_data():
 
 def select_values(frame: pd.DataFrame, column: str, label: str) -> pd.DataFrame:
     values = sorted(frame[column].dropna().unique().tolist())
-    selected = st.sidebar.multiselect(label, values)
+    selected = st.sidebar.multiselect(label, values, placeholder="Todos")
     return frame[frame[column].isin(selected)] if selected else frame
 
 
@@ -161,20 +161,6 @@ def summary(
         .reset_index()
     )
     monthly["invoice_date"] = monthly.invoice_date.astype(str)
-    section_heading(
-        "Evolución mensual de facturación",
-        "Tendencia de los últimos 18 meses disponibles para contextualizar el período.",
-    )
-    render_chart(
-        chart(
-            monthly.tail(18),
-            "line",
-            "invoice_date",
-            "revenue",
-            "Evolución mensual de facturación",
-        )
-    )
-
     alerts: list[ManagementAlert] = []
     if delta < -10:
         alerts.append(
@@ -189,7 +175,23 @@ def summary(
                 f"Hay {open_orders.order_id.nunique()} pedidos pendientes de entrega.",
             )
         )
-    alerts_panel(alerts)
+    section_heading(
+        "Pulso del negocio",
+        "Tendencia de facturación y señales que requieren seguimiento de gestión.",
+    )
+    trend_column, alerts_column = st.columns([1.75, 1], vertical_alignment="top")
+    with trend_column:
+        render_chart(
+            chart(
+                monthly.tail(18),
+                "line",
+                "invoice_date",
+                "revenue",
+                "Facturación mensual",
+            )
+        )
+    with alerts_column:
+        alerts_panel(alerts)
 
 
 def sales_page(sales: pd.DataFrame, start: date, end: date) -> None:
@@ -352,7 +354,7 @@ def abc_page(abc: pd.DataFrame, sales: pd.DataFrame, start: date, end: date) -> 
         "Concentración de facturación móvil de 12 meses.",
         f"{start:%d/%m/%Y} — {end:%d/%m/%Y}",
     )
-    category = st.sidebar.multiselect("Categoría ABC", ["A", "B", "C"])
+    category = st.sidebar.multiselect("Categoría ABC", ["A", "B", "C"], placeholder="Todas")
     frame = abc[abc.abc.isin(category)] if category else abc
     metric_row(
         [
@@ -399,14 +401,12 @@ def main() -> None:
     setup_page()
     bootstrap()
     with st.sidebar:
-        st.image(str(APP_DIR / "assets" / "envaplast-logo.svg"), width="stretch")
-        with st.container(key="sidebar_identity"):
-            st.subheader("Envaplast Analytics", anchor=False)
-            st.html('<div class="sidebar-subtitle">Business Intelligence Platform</div>')
+        st.image(str(APP_DIR / "assets" / "envaplast-logo.svg"), width=210)
+        st.html('<div class="st-key-sidebar_tagline">INTELIGENCIA COMERCIAL</div>')
         sidebar_section("PLATAFORMA")
         with st.expander("Sobre la empresa", icon=":material/factory:"):
             st.write(COMPANY_DESCRIPTION)
-        sidebar_section("NAVEGACIÓN")
+        sidebar_section("TABLEROS")
         page = st.radio(
             "Seleccioná un tablero",
             list(NAVIGATION_ICONS),
