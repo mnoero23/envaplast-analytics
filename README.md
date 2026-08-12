@@ -30,6 +30,14 @@ Responder preguntas simples suele requerir tiempo y trabajo manual:
 
 Envaplast Analytics centraliza esa información y la transforma en una herramienta que permite responder esas preguntas en segundos.
 
+## Decisiones que habilita
+
+- Detectar caídas de facturación comparando períodos equivalentes.
+- Priorizar cobranzas según vencimiento, concentración y límite de crédito.
+- Identificar pedidos demorados y medir el cumplimiento de fechas prometidas.
+- Comprender qué clientes, productos y zonas explican el resultado comercial.
+- Segmentar la cartera con análisis ABC para orientar la gestión de cuentas.
+
 ## 🚀 Capacidades del proyecto
 
 - Modelado relacional y SQL compatible con SQLite/PostgreSQL.
@@ -49,6 +57,15 @@ Envaplast Analytics centraliza esa información y la transforma en una herramien
 ## 🖥️ Vista del producto
 
 ![Resumen ejecutivo de Envaplast Analytics](docs/assets/dashboard-overview.png)
+
+## Alcance entregado
+
+- Cinco tableros conectados sobre un único modelo comercial.
+- Dieciocho meses de datos sintéticos reproducibles y trazables.
+- Carga incremental idempotente con controles automáticos de calidad.
+- Filtros globales y específicos, tablas explorables y exportación CSV.
+- Demo pública desplegada en Streamlit Community Cloud.
+- Documentación de arquitectura, modelo de datos, KPIs y despliegue.
 
 ## 💡 Mi enfoque
 

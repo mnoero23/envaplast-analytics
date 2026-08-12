@@ -110,7 +110,7 @@ def summary(
 
     section_heading(
         "Indicadores principales",
-        "Los valores con mayor impacto en la gestión del período.",
+        "La facturación corresponde al período seleccionado; cartera y backlog reflejan el estado actual.",
     )
     metric_row(
         [
@@ -127,7 +127,7 @@ def summary(
     )
     section_heading(
         "Indicadores operativos",
-        "Volumen, actividad comercial y eficiencia de cobranza.",
+        "Unidades y pedidos corresponden al período; mora y cobranza reflejan la cartera actual.",
     )
     metric_row(
         [
@@ -419,9 +419,6 @@ def main() -> None:
     with st.sidebar:
         sidebar_section("RANGO DE FECHAS")
     start, end = date_filter(minimum, maximum)
-    with st.sidebar:
-        sidebar_notice()
-        sidebar_footer()
     try:
         sales, orders, ar, abc = load_data()
         {
@@ -445,6 +442,9 @@ def main() -> None:
     except Exception as exc:
         st.error("No fue posible cargar el tablero. Revisá la conexión y la carga inicial.")
         st.exception(exc)
+    with st.sidebar:
+        sidebar_notice()
+        sidebar_footer()
 
 
 if __name__ == "__main__":
