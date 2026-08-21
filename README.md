@@ -45,6 +45,7 @@ Envaplast Analytics centraliza esa información y la transforma en una herramien
 - ETL incremental idempotente, trazabilidad y controles automáticos.
 - KPIs comerciales, cuentas corrientes, mora y análisis ABC.
 - Aplicación Streamlit profesional, filtros, visualizaciones y descargas.
+- **Cobranzas AI:** ranking explicable de cuentas, siguiente acción y borrador editable.
 
 ## Vistas del MVP
 
@@ -52,7 +53,16 @@ Envaplast Analytics centraliza esa información y la transforma en una herramien
 2. **Facturación y ventas:** tendencias y mix por producto, cliente y geografía.
 3. **Pedidos:** backlog, estados, demoras y cumplimiento prometido.
 4. **Cuentas corrientes:** saldos, aging, vencidos, concentración y límites.
-5. **Clientes y ABC:** participación móvil de 12 meses y evolución individual.
+5. **Cobranzas AI:** priorización por riesgo e impacto con revisión humana.
+6. **Clientes y ABC:** participación móvil de 12 meses y evolución individual.
+
+## 🏆 Coder Cup 2026
+
+Durante la Coder Cup se desarrolló **Envaplast Cobranzas AI**, una capacidad nueva que
+convierte la cartera abierta en una cola de gestión accionable. El puntaje combina saldo
+vencido, días de mora, uso del límite de crédito y concentración. Cada prioridad muestra sus
+factores, recomienda una acción y genera un borrador editable; ningún contacto se envía sin
+revisión humana.
 
 ## 🖥️ Vista del producto
 
