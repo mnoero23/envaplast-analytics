@@ -43,6 +43,7 @@ from src.analytics import (
     receivables,
     sales_detail,
 )
+from src.cobranzas import collection_message, prioritize_receivables
 from src.database import engine
 from src.generator import create_schema, initialize_history
 from src.metrics import comparable_previous_period
@@ -53,6 +54,7 @@ NAVIGATION_ICONS = {
     "Facturación y ventas": "query_stats",
     "Pedidos": "inventory_2",
     "Cuentas corrientes": "account_balance_wallet",
+    "Cobranzas AI": "auto_awesome",
     "Clientes y ABC": "groups",
 }
 
@@ -348,6 +350,100 @@ def ar_page(ar: pd.DataFrame, start: date, end: date) -> None:
     csv_download(frame, "cuentas_corrientes_envaplast.csv")
 
 
+def collections_ai_page(ar: pd.DataFrame, start: date, end: date) -> None:
+    header(
+        "Cobranzas AI",
+        "Una cola de trabajo explicable para concentrar la gestión donde más impacto genera.",
+        "Funcionalidad desarrollada para Coder Cup 2026",
+    )
+    queue = prioritize_receivables(ar[ar.invoice_date.dt.date <= end])
+    if queue.empty:
+        st.success("No hay saldos abiertos para priorizar.")
+        return
+
+    top_ten = queue.head(10)
+    section_heading(
+        "Impacto potencial",
+        "El puntaje combina saldo vencido, mora, uso del límite de crédito y concentración.",
+    )
+    metric_row(
+        [
+            ("Cartera abierta", money(queue.balance.sum()), None),
+            ("Saldo vencido", money(queue.overdue_balance.sum()), None),
+            ("Casos críticos", number((queue.priority == "Crítica").sum()), None),
+            (
+                "Cobertura top 10",
+                f"{top_ten.balance.sum() / queue.balance.sum():.1%}",
+                money(top_ten.balance.sum()),
+            ),
+        ],
+        key="kpi_collections_ai",
+    )
+
+    section_heading(
+        "Prioridades de hoy",
+        "Ranking transparente: cada caso muestra los factores que explican su posición.",
+    )
+    display = top_ten[
+        [
+            "priority",
+            "customer_name",
+            "priority_score",
+            "balance",
+            "overdue_balance",
+            "max_days_past_due",
+            "explanation",
+        ]
+    ].rename(
+        columns={
+            "priority": "Prioridad",
+            "customer_name": "Cliente",
+            "priority_score": "Puntaje",
+            "balance": "Saldo",
+            "overdue_balance": "Vencido",
+            "max_days_past_due": "Mora máxima",
+            "explanation": "Por qué aparece aquí",
+        }
+    )
+    dataframe(display, key="collections_ai_table", height=390)
+
+    section_heading(
+        "Asistente de gestión",
+        "Elegí un cliente, revisá la recomendación y ajustá el mensaje antes de enviarlo.",
+    )
+    selected_customer = st.selectbox("Cliente a gestionar", queue.customer_name.tolist())
+    selected = queue[queue.customer_name == selected_customer].iloc[0]
+    left, right = st.columns([1, 1.35], vertical_alignment="top")
+    with left:
+        st.markdown(f"**Prioridad:** {selected.priority} · {selected.priority_score:.1f}/100")
+        st.markdown(f"**Señales:** {selected.explanation}.")
+        st.info(selected.recommended_action, icon=":material/task_alt:")
+        st.caption(
+            "El ranking es una recomendación explicable. La decisión y el contacto permanecen "
+            "bajo revisión humana."
+        )
+    with right:
+        draft = collection_message(
+            selected.customer_name,
+            selected.balance,
+            int(selected.max_days_past_due),
+        )
+        st.text_area(
+            "Borrador editable",
+            draft,
+            height=220,
+            key=f"collection_draft_{selected.customer_id}",
+        )
+        st.download_button(
+            "Descargar borrador",
+            data=draft,
+            file_name=f"cobranza_{selected.customer_id}.txt",
+            mime="text/plain",
+            icon=":material/download:",
+            use_container_width=True,
+        )
+
+
 def abc_page(abc: pd.DataFrame, sales: pd.DataFrame, start: date, end: date) -> None:
     header(
         "Clientes y análisis ABC",
@@ -426,6 +522,7 @@ def main() -> None:
             "Facturación y ventas": sales_page,
             "Pedidos": orders_page,
             "Cuentas corrientes": ar_page,
+            "Cobranzas AI": collections_ai_page,
         }.get(page, abc_page)(
             *(
                 (sales, orders, ar, start, end)
@@ -435,7 +532,7 @@ def main() -> None:
                 else (orders, start, end)
                 if page == "Pedidos"
                 else (ar, start, end)
-                if page == "Cuentas corrientes"
+                if page in {"Cuentas corrientes", "Cobranzas AI"}
                 else (abc, sales, start, end)
             )
         )
