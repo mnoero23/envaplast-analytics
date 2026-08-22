@@ -1,42 +1,35 @@
 [theme]
 base = "light"
-primaryColor = "#0F766E"
-backgroundColor = "#F3F6F7"
-secondaryBackgroundColor = "#FFFFFF"
-textColor = "#172B35"
-font = "'IBM Plex Sans':https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-headingFont = "'IBM Plex Sans':https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-borderColor = "#D7E0E3"
-dataframeBorderColor = "#D7E0E3"
-dataframeHeaderBackgroundColor = "#E8EEF0"
-chartCategoricalColors = ["#0F766E", "#1B4965", "#D49A35", "#C45B45", "#6D7E87"]
+primaryColor = "#1B4965"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F3F6F8"
+textColor = "#1F2937"
+font = "sans serif"
+borderColor = "#D8E2EA"
+dataframeBorderColor = "#D8E2EA"
+dataframeHeaderBackgroundColor = "#F2F6F9"
+chartCategoricalColors = ["#1B4965", "#2A9D8F", "#E9C46A", "#E76F51", "#6C757D"]
 baseRadius = "12px"
 buttonRadius = "10px"
 showWidgetBorder = true
 showSidebarBorder = true
-baseFontSize = 14
-headingFontSizes = ["2rem", "1.35rem", "1.05rem", "0.95rem", "0.85rem", "0.75rem"]
-headingFontWeights = [700, 600, 600, 600, 600, 600]
+baseFontSize = 15
+headingFontSizes = ["2.15rem", "1.55rem", "1.2rem", "1rem", "0.9rem", "0.8rem"]
+headingFontWeights = [600, 600, 600, 600, 600, 600]
 linkUnderline = false
 blueColor = "#1B4965"
-greenColor = "#0F766E"
-greenBackgroundColor = "#DDF3EF"
-greenTextColor = "#0A5B55"
-yellowColor = "#D49A35"
-orangeColor = "#C9782C"
-orangeBackgroundColor = "#F8E9D8"
-orangeTextColor = "#8F4D16"
-redColor = "#C45B45"
-redBackgroundColor = "#F7E2DE"
-redTextColor = "#8F3A2B"
-grayColor = "#61747E"
+greenColor = "#2A9D8F"
+yellowColor = "#E9C46A"
+orangeColor = "#D97745"
+redColor = "#C94F3D"
+grayColor = "#6C757D"
 
 [theme.sidebar]
-backgroundColor = "#102A34"
-secondaryBackgroundColor = "#173A45"
-textColor = "#F2F8F9"
-primaryColor = "#67D2C4"
-borderColor = "#294B56"
+backgroundColor = "#102F3D"
+secondaryBackgroundColor = "#173F4E"
+textColor = "#F4FAFB"
+primaryColor = "#4FC3B3"
+borderColor = "#315563"
 
 [server]
 headless = true

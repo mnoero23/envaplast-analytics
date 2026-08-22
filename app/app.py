@@ -81,7 +81,7 @@ def load_data():
 
 def select_values(frame: pd.DataFrame, column: str, label: str) -> pd.DataFrame:
     values = sorted(frame[column].dropna().unique().tolist())
-    selected = st.sidebar.multiselect(label, values, placeholder="Todos")
+    selected = st.sidebar.multiselect(label, values)
     return frame[frame[column].isin(selected)] if selected else frame
 
 
@@ -110,7 +110,7 @@ def summary(
 
     section_heading(
         "Indicadores principales",
-        "La facturación corresponde al período seleccionado; cartera y backlog reflejan el estado actual.",
+        "Los valores con mayor impacto en la gestión del período.",
     )
     metric_row(
         [
@@ -127,7 +127,7 @@ def summary(
     )
     section_heading(
         "Indicadores operativos",
-        "Unidades y pedidos corresponden al período; mora y cobranza reflejan la cartera actual.",
+        "Volumen, actividad comercial y eficiencia de cobranza.",
     )
     metric_row(
         [
@@ -161,6 +161,20 @@ def summary(
         .reset_index()
     )
     monthly["invoice_date"] = monthly.invoice_date.astype(str)
+    section_heading(
+        "Evolución mensual de facturación",
+        "Tendencia de los últimos 18 meses disponibles para contextualizar el período.",
+    )
+    render_chart(
+        chart(
+            monthly.tail(18),
+            "line",
+            "invoice_date",
+            "revenue",
+            "Evolución mensual de facturación",
+        )
+    )
+
     alerts: list[ManagementAlert] = []
     if delta < -10:
         alerts.append(
@@ -175,23 +189,7 @@ def summary(
                 f"Hay {open_orders.order_id.nunique()} pedidos pendientes de entrega.",
             )
         )
-    section_heading(
-        "Pulso del negocio",
-        "Tendencia de facturación y señales que requieren seguimiento de gestión.",
-    )
-    trend_column, alerts_column = st.columns([1.75, 1], vertical_alignment="top")
-    with trend_column:
-        render_chart(
-            chart(
-                monthly.tail(18),
-                "line",
-                "invoice_date",
-                "revenue",
-                "Facturación mensual",
-            )
-        )
-    with alerts_column:
-        alerts_panel(alerts)
+    alerts_panel(alerts)
 
 
 def sales_page(sales: pd.DataFrame, start: date, end: date) -> None:
@@ -354,7 +352,7 @@ def abc_page(abc: pd.DataFrame, sales: pd.DataFrame, start: date, end: date) -> 
         "Concentración de facturación móvil de 12 meses.",
         f"{start:%d/%m/%Y} — {end:%d/%m/%Y}",
     )
-    category = st.sidebar.multiselect("Categoría ABC", ["A", "B", "C"], placeholder="Todas")
+    category = st.sidebar.multiselect("Categoría ABC", ["A", "B", "C"])
     frame = abc[abc.abc.isin(category)] if category else abc
     metric_row(
         [
@@ -401,12 +399,14 @@ def main() -> None:
     setup_page()
     bootstrap()
     with st.sidebar:
-        st.image(str(APP_DIR / "assets" / "envaplast-logo.svg"), width=210)
-        st.html('<div class="st-key-sidebar_tagline">INTELIGENCIA COMERCIAL</div>')
+        st.image(str(APP_DIR / "assets" / "envaplast-logo.svg"), width="stretch")
+        with st.container(key="sidebar_identity"):
+            st.subheader("Envaplast Analytics", anchor=False)
+            st.html('<div class="sidebar-subtitle">Business Intelligence Platform</div>')
         sidebar_section("PLATAFORMA")
         with st.expander("Sobre la empresa", icon=":material/factory:"):
             st.write(COMPANY_DESCRIPTION)
-        sidebar_section("TABLEROS")
+        sidebar_section("NAVEGACIÓN")
         page = st.radio(
             "Seleccioná un tablero",
             list(NAVIGATION_ICONS),
@@ -419,6 +419,9 @@ def main() -> None:
     with st.sidebar:
         sidebar_section("RANGO DE FECHAS")
     start, end = date_filter(minimum, maximum)
+    with st.sidebar:
+        sidebar_notice()
+        sidebar_footer()
     try:
         sales, orders, ar, abc = load_data()
         {
@@ -442,9 +445,6 @@ def main() -> None:
     except Exception as exc:
         st.error("No fue posible cargar el tablero. Revisá la conexión y la carga inicial.")
         st.exception(exc)
-    with st.sidebar:
-        sidebar_notice()
-        sidebar_footer()
 
 
 if __name__ == "__main__":
